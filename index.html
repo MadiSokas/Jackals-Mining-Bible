@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE JACKALS | Mining Bible 4.7</title>
+    <style>
+        :root {
+            --jackal-gold: #f0a500;
+            --jackal-orange: #ff6b00;
+            --bg-dark: #05070a;
+            --surface: #12161d;
+            --text-main: #e0e0e0;
+            --accent-blue: #00d4ff;
+            --danger: #ff4d4d;
+            --success: #00ff88;
+        }
+
+        /* ── BASE LAYOUT (DESKTOP) ─────────────────────────────── */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar — desktop */
+        nav {
+            width: 280px;
+            min-width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--jackal-gold);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            z-index: 10;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        /* Main content — desktop */
+        main {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px;
+            position: relative;
+        }
+
+        /* Mobile header — hidden on desktop */
+        #mobile-header {
+            display: none;
+        }
+
+        /* Nav overlay — hidden by default */
+        #nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 149;
+            background: rgba(0,0,0,0.6);
+        }
+        #nav-overlay.visible { display: block; }
+
+        /* ── MOBILE (≤ 768px) ───────────────────────────────────── */
+        @media (max-width: 768px) {
+
+            /* Body scrolls normally on mobile */
+            body {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            /* Show the top bar */
+            #mobile-header {
+                display: flex;
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                z-index: 200;
+                background: var(--surface);
+                border-bottom: 2px solid var(--jackal-gold);
+                padding: 12px 16px;
+                align-items: center;
+                justify-content: space-between;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            }
+
+            /* Sidebar becomes a slide-in drawer */
+            nav {
+                position: fixed;
+                top: 0; left: -290px;
+                width: 280px;
+                height: 100vh;
+                z-index: 160;
+                overflow-y: auto;
+                transition: left 0.28s ease;
+                padding: 70px 20px 30px;
+                box-shadow: none;
+            }
+            nav.open {
+                left: 0;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.7);
+            }
+
+            /* Push content below fixed header */
+            main {
+                margin-top: 54px;
+                padding: 16px;
+                overflow-y: visible;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            /* ── LAYOUT FIXES ── */
+            .grid         { grid-template-columns: 1fr !important; }
+            .role-grid    { grid-template-columns: 1fr !important; }
+            .method-row   { grid-template-columns: 1fr 1fr; }
+            .mod-row      { grid-template-columns: 1fr; gap: 3px; }
+
+            /* Tables scroll horizontally instead of overflowing */
+            .card { overflow-x: auto; padding: 14px; }
+            table { min-width: 480px; }
+            .price-table-wrap table { min-width: 560px; }
+
+            /* Gadget cards stack */
+            .gadget-card { flex-direction: column; gap: 8px; }
+
+            /* Phase blocks tighter */
+            .phase-block { padding-left: 10px; }
+
+            /* Quality tiers stack cleanly */
+            .quality-tier { flex-wrap: wrap; }
+            .quality-tier .tier-desc { width: 100%; margin-top: 2px; }
+
+            /* Tab bars always wrap */
+            .system-tab-bar  { flex-wrap: wrap; }
+            .mineral-tab-bar { flex-wrap: wrap; }
+
+            /* Timer */
+            #timer-display { font-size: 2.6rem; }
+
+            /* Quality slider */
+            .calc-quality-row { flex-direction: column; align-items: stretch; }
+            .calc-quality-row input[type=range] { width: 100%; }
+            .quality-val { text-align: left; }
+
+            /* Laser meta tags */
+            .laser-meta { flex-wrap: wrap; }
+
+            /* Rock diagram — allow horizontal scroll */
+            .rock-diagram { overflow-x: auto; font-size: 0.75rem; }
+
+            /* Headings */
+            h2 { font-size: 1.15rem; }
+            h3 { font-size: 0.95rem; }
+
+            /* Stat rows — allow wrapping on very small screens */
+            .stat-row { flex-wrap: wrap; gap: 4px; }
+        }
+
+        /* ── MOBILE HEADER INTERNALS (always defined) ─────────── */
+        #mobile-header .mob-title {
+            color: var(--jackal-gold);
+            font-weight: bold;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+        #hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin: 0;
+            color: var(--jackal-gold);
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+        #hamburger:hover { color: var(--jackal-orange); transform: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        section { display: none; max-width: 1000px; margin: 0 auto; }
+        section.active { display: block; animation: fadeIn 0.3s ease-out; }
+
+        .org-logo { text-align: center; border-bottom: 2px solid var(--jackal-gold); margin-bottom: 20px; padding-bottom: 10px; }
+        .org-logo h1 { margin: 0; color: var(--jackal-gold); letter-spacing: 2px; font-size: 1.4rem; text-transform: uppercase; }
+        .org-logo span { font-size: 0.7rem; color: var(--jackal-orange); font-weight: bold; }
+
+        .nav-group { margin-bottom: 20px; }
+        .nav-group-label { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-left: 10px; margin-bottom: 5px; display: block; }
+
+        .nav-link { padding: 12px 15px; margin: 5px 0; cursor: pointer; border-radius: 4px; transition: 0.2s; font-weight: 600; display: block; border: 1px solid transparent; }
+        .nav-link:hover { background: rgba(240, 165, 0, 0.1); color: var(--jackal-gold); border-color: rgba(240, 165, 0, 0.3); }
+        .nav-link.active { background: var(--jackal-gold); color: black; box-shadow: 0 0 10px rgba(240, 165, 0, 0.4); }
+
+ padding: 20px; border-radius: 8px; border: 1px solid #2a2e35; margin-bottom: 20px; }
+        h2 { color: var(--jackal-gold); border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: rgba(0,0,0,0.2); }
+        th, td { padding: 12px; border: 1px solid #333; text-align: left; }
+        th { background: #1a1d23; color: var(--jackal-gold); }
+
+        input, select { background: #1a1d23; border: 1px solid #444; color: white; padding: 12px; width: 100%; border-radius: 4px; box-sizing: border-box; }
+        input:focus { border-color: var(--jackal-gold); outline: none; }
+        button { background: var(--jackal-gold); border: none; padding: 12px 24px; font-weight: bold; cursor: pointer; border-radius: 4px; color: black; text-transform: uppercase; margin-top: 10px; }
+        button:hover { background: var(--jackal-orange); transform: translateY(-2px); }
+
+        #timer-display { font-size: 4rem; font-family: 'Courier New', monospace; text-align: center; color: var(--accent-blue); margin: 20px 0; font-weight: bold; }
+        .critical { color: var(--danger) !important; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.4; } }
+
+        .part-tag { background: #252a34; color: var(--accent-blue); padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; border: 1px solid var(--accent-blue); display: inline-block; margin: 2px; }
+
+        label { display: block; margin-top: 12px; margin-bottom: 4px; font-size: 0.85rem; color: #aaa; }
+        .result-box { background: #0a0c10; border: 1px solid var(--jackal-gold); border-radius: 6px; padding: 20px; margin-top: 20px; }
+        .result-box .big-number { font-size: 2.5rem; color: var(--success); font-family: 'Courier New', monospace; font-weight: bold; }
+
+        .timer-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .timer-controls button { flex: 1; min-width: 120px; }
+        .btn-danger { background: var(--danger) !important; color: white !important; }
+        .btn-danger:hover { background: #cc0000 !important; }
+
+        /* QUALITY SCORE BAR */
+        .quality-bar-wrap { background: #0a0c10; border-radius: 6px; overflow: hidden; height: 28px; margin: 6px 0; position: relative; }
+        .quality-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 0.8rem; font-weight: bold; color: #000; transition: width 0.4s ease; }
+        .quality-tier { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+        .quality-tier .tier-label { width: 90px; font-size: 0.8rem; color: #aaa; }
+        .quality-tier .tier-desc { font-size: 0.8rem; color: #ccc; }
+
+        /* DANGER RATINGS */
+        .danger-card { border-left: 4px solid var(--danger); }
+        .warning-card { border-left: 4px solid var(--jackal-orange); }
+        .safe-card { border-left: 4px solid var(--success); }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1e2229; font-size: 0.9rem; }
+        .stat-row:last-child { border-bottom: none; }
+        .stat-icon { font-size: 1.1rem; margin-right: 6px; }
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .badge-red { background: rgba(255,77,77,0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .badge-orange { background: rgba(255,107,0,0.2); color: var(--jackal-orange); border: 1px solid var(--jackal-orange); }
+        .badge-green { background: rgba(0,255,136,0.2); color: var(--success); border: 1px solid var(--success); }
+        .badge-blue { background: rgba(0,212,255,0.2); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+
+        /* FABRICATOR */
+        .loop-step { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+        .loop-num { background: var(--jackal-gold); color: black; font-weight: bold; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem; }
+        .loop-body h4 { margin: 0 0 4px; color: var(--accent-blue); }
+        .loop-body p { margin: 0; font-size: 0.9rem; color: #aaa; }
+
+        /* MULTI-MINERAL */
+        .rock-diagram { background: #0a0c10; border: 1px solid #2a2e35; border-radius: 8px; padding: 16px; font-family: 'Courier New', monospace; font-size: 0.85rem; line-height: 1.8; }
+        .rock-primary { color: var(--jackal-gold); }
+        .rock-secondary { color: var(--accent-blue); }
+        .rock-junk { color: #555; }
+
+        /* CHUNK 2 STYLES */
+        .system-tab-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+        .sys-tab { padding: 8px 20px; border-radius: 4px; cursor: pointer; border: 1px solid #444; font-weight: bold; font-size: 0.85rem; transition: 0.2s; }
+        .sys-tab.active { background: var(--jackal-gold); color: black; border-color: var(--jackal-gold); }
+        .sys-tab:not(.active):hover { border-color: var(--jackal-gold); color: var(--jackal-gold); }
+        .sys-panel { display: none; }
+        .sys-panel.active { display: block; }
+
+        .zone-card { background: #0d1017; border: 1px solid #2a2e35; border-radius: 8px; padding: 16px; margin-bottom: 14px; }
+        .zone-card h4 { margin: 0 0 8px; color: var(--accent-blue); font-size: 1rem; }
+        .zone-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+        .zone-ore { background: #1a1d23; color: var(--jackal-gold); padding: 3px 9px; border-radius: 4px; font-size: 0.78rem; font-weight: bold; }
+        .zone-note { font-size: 0.85rem; color: #aaa; margin: 0; }
+
+        .method-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; padding: 10px 0; border-bottom: 1px solid #1e2229; align-items: center; font-size: 0.88rem; }
+        .method-row:last-child { border-bottom: none; }
+        .method-name { font-weight: bold; color: var(--text-main); }
+
+        .price-table-wrap { overflow-x: auto; }
+        .price-update { font-size: 0.75rem; color: #555; margin-top: 6px; }
+
+        .economy-alert { background: rgba(240,165,0,0.08); border: 1px solid rgba(240,165,0,0.3); border-radius: 6px; padding: 14px; margin-bottom: 16px; }
+        .economy-alert h4 { margin: 0 0 6px; color: var(--jackal-gold); }
+        .economy-alert p { margin: 0; font-size: 0.9rem; color: #ccc; }
+
+        /* MINERAL DB */
+        .mineral-tab-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .mineral-tab { padding: 7px 16px; border-radius: 4px; cursor: pointer; border: 1px solid #444; font-weight: bold; font-size: 0.82rem; transition: 0.2s; }
+        .mineral-tab.active { background: var(--jackal-gold); color: black; border-color: var(--jackal-gold); }
+        .mineral-tab:not(.active):hover { border-color: var(--jackal-gold); color: var(--jackal-gold); }
+        .mineral-panel { display: none; }
+        .mineral-panel.active { display: block; }
+        .cat-label { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.72rem; font-weight: bold; margin-left: 6px; vertical-align: middle; }
+        .cat-ship { background: rgba(0,212,255,0.15); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+        .cat-fps  { background: rgba(0,255,136,0.15); color: var(--success); border: 1px solid var(--success); }
+        .cat-roc  { background: rgba(240,165,0,0.15); color: var(--jackal-gold); border: 1px solid var(--jackal-gold); }
+        .cat-pyro { background: rgba(255,107,0,0.2); color: var(--jackal-orange); border: 1px solid var(--jackal-orange); }
+        tr.tier-legendary td:first-child { border-left: 3px solid var(--danger); }
+        tr.tier-epic      td:first-child { border-left: 3px solid var(--jackal-gold); }
+        tr.tier-rare      td:first-child { border-left: 3px solid var(--accent-blue); }
+        tr.tier-uncommon  td:first-child { border-left: 3px solid #888; }
+        tr.tier-common    td:first-child { border-left: 3px solid #333; }
+
+        /* CHUNK 3 STYLES */
+        .phase-block { border-left: 3px solid var(--jackal-gold); padding: 0 0 0 16px; margin-bottom: 24px; }
+        .phase-block h4 { color: var(--jackal-gold); margin: 0 0 6px; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
+        .phase-num { background: var(--jackal-gold); color: black; font-weight: bold; border-radius: 3px; padding: 2px 8px; font-size: 0.8rem; }
+        .phase-block p { margin: 0 0 6px; font-size: 0.88rem; color: #ccc; }
+        .phase-block ul { margin: 4px 0 0 16px; padding: 0; color: #aaa; font-size: 0.85rem; line-height: 1.8; }
+        .phase-tip { background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.2); border-radius: 5px; padding: 8px 12px; font-size: 0.82rem; color: var(--accent-blue); margin-top: 8px; }
+
+        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .role-card { background: #0d1017; border-radius: 8px; padding: 16px; border: 1px solid #2a2e35; }
+        .role-card h4 { margin: 0 0 8px; font-size: 0.95rem; }
+        .role-card p { margin: 0 0 6px; font-size: 0.83rem; color: #aaa; }
+        .role-card ul { margin: 4px 0 0 14px; padding: 0; font-size: 0.82rem; color: #888; line-height: 1.7; }
+        .role-fighter h4 { color: var(--danger); }
+        .role-miner h4 { color: var(--jackal-gold); }
+        .role-crafter h4 { color: var(--accent-blue); }
+        .role-hauler h4 { color: var(--success); }
+
+        .checklist-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1a1d23; }
+        .checklist-item:last-child { border-bottom: none; }
+        .check-box { width: 22px; height: 22px; border: 2px solid #444; border-radius: 4px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: 0.15s; margin-top: 1px; }
+        .check-box.checked { background: var(--success); border-color: var(--success); color: black; }
+        .check-label { font-size: 0.88rem; color: #ccc; line-height: 1.5; }
+        .check-label strong { color: var(--text-main); }
+        .check-tag { font-size: 0.72rem; font-weight: bold; padding: 2px 7px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+        .tag-go   { background: rgba(0,255,136,0.15); color: var(--success); }
+        .tag-skip { background: rgba(255,77,77,0.15); color: var(--danger); }
+        .tag-maybe{ background: rgba(240,165,0,0.15); color: var(--jackal-gold); }
+        .checklist-reset { background: none; border: 1px solid #444; color: #aaa; padding: 8px 16px; font-size: 0.8rem; margin-top: 14px; }
+        .checklist-reset:hover { border-color: var(--jackal-gold); color: var(--jackal-gold); background: none; transform: none; }
+
+        /* CHUNK 4 STYLES */
+        .laser-card { background: #0d1017; border: 1px solid #2a2e35; border-radius: 8px; padding: 16px; margin-bottom: 14px; }
+        .laser-card h4 { margin: 0 0 4px; color: var(--accent-blue); font-size: 0.95rem; }
+        .laser-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 8px; }
+        .laser-stat { font-size: 0.78rem; padding: 2px 8px; border-radius: 3px; font-weight: bold; }
+        .ls-power   { background: rgba(255,77,77,0.15); color: var(--danger); border: 1px solid var(--danger); }
+        .ls-safe    { background: rgba(0,255,136,0.15); color: var(--success); border: 1px solid var(--success); }
+        .ls-slots   { background: rgba(0,212,255,0.15); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+        .ls-size    { background: rgba(240,165,0,0.15); color: var(--jackal-gold); border: 1px solid var(--jackal-gold); }
+        .laser-card p { margin: 0; font-size: 0.83rem; color: #aaa; line-height: 1.5; }
+        .laser-card .jackal-rec { margin-top: 8px; font-size: 0.8rem; color: var(--jackal-gold); font-style: italic; }
+
+        .mod-row { display: grid; grid-template-columns: 140px 1fr 80px; gap: 10px; padding: 9px 0; border-bottom: 1px solid #1a1d23; align-items: start; font-size: 0.85rem; }
+        .mod-row:last-child { border-bottom: none; }
+        .mod-name { font-weight: bold; color: var(--text-main); }
+        .mod-desc { color: #aaa; line-height: 1.45; }
+        .mod-type-passive { color: var(--success); font-size: 0.75rem; font-weight: bold; }
+        .mod-type-active  { color: var(--jackal-orange); font-size: 0.75rem; font-weight: bold; }
+
+        .gadget-card { background: #0d1017; border: 1px solid #2a2e35; border-radius: 8px; padding: 14px; margin-bottom: 12px; display: flex; gap: 14px; align-items: flex-start; }
+        .gadget-icon { font-size: 1.8rem; flex-shrink: 0; }
+        .gadget-body h4 { margin: 0 0 4px; color: var(--jackal-gold); font-size: 0.9rem; }
+        .gadget-body p { margin: 0 0 4px; font-size: 0.82rem; color: #aaa; line-height: 1.45; }
+        .gadget-body .gadget-warn { color: var(--danger); font-size: 0.78rem; font-weight: bold; }
+
+        /* UPGRADED LOADOUT BUILDER */
+        .loadout-section-label { font-size: 0.72rem; text-transform: uppercase; color: #555; letter-spacing: 1px; margin: 14px 0 6px; }
+
+        /* UPGRADED PROFIT CALC */
+        .calc-quality-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .calc-quality-row input[type=range] { flex: 1; min-width: 120px; accent-color: var(--jackal-gold); }
+        .quality-val { color: var(--jackal-gold); font-weight: bold; min-width: 40px; text-align: right; }
+
+    </style>
+</head>
+<body>
+
+<div id="nav-overlay" onclick="closeNav()"></div>
+
+<!-- MOBILE HEADER -->
+<div id="mobile-header">
+    <span class="mob-title">⛏ THE JACKALS</span>
+    <button id="hamburger" onclick="toggleNav()">☰</button>
+</div>
+
+<nav id="sidebar">
+    <div class="org-logo">
+        <h1>THE JACKALS</h1>
+        <span>LOGISTICS &amp; INDUSTRIAL</span>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-group-label">Intelligence</span>
+        <div class="nav-link active" onclick="showSection('hub', this)">Command Hub</div>
+        <div class="nav-link" onclick="showSection('training', this)">Mining 101</div>
+        <div class="nav-link" onclick="showSection('minerals', this)">Mineral Database</div>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-group-label">4.7 Systems</span>
+        <div class="nav-link" onclick="showSection('quality', this)">Quality Score Guide</div>
+        <div class="nav-link" onclick="showSection('multimineral', this)">Multi-Mineral Rocks</div>
+        <div class="nav-link" onclick="showSection('fabricator', this)">Fabricator Loop</div>
+        <div class="nav-link" onclick="showSection('danger', this)">Danger Ratings</div>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-group-label">Locations & Economy</span>
+        <div class="nav-link" onclick="showSection('refineries', this)">Refinery Locations</div>
+        <div class="nav-link" onclick="showSection('pyro', this)">Pyro Mining Zones</div>
+        <div class="nav-link" onclick="showSection('nyx', this)">Nyx Mining Zones</div>
+        <div class="nav-link" onclick="showSection('economy', this)">Economy & Prices</div>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-group-label">Missions & Org</span>
+        <div class="nav-link" onclick="showSection('breaker', this)">Breaker Station Guide</div>
+        <div class="nav-link" onclick="showSection('roles', this)">Jackal Role Assignments</div>
+        <div class="nav-link" onclick="showSection('rockeval', this)">Rock Eval Checklist</div>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-group-label">Gear & Loadouts</span>
+        <div class="nav-link" onclick="showSection('lasers', this)">Lasers Deep Dive</div>
+        <div class="nav-link" onclick="showSection('modules', this)">Modules Reference</div>
+        <div class="nav-link" onclick="showSection('gadgets', this)">Gadgets</div>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-group-label">Tools</span>
+        <div class="nav-link" onclick="showSection('builder', this)">Loadout Builder</div>
+        <div class="nav-link" onclick="showSection('calc', this)">Profit Calculator</div>
+        <div class="nav-link" onclick="showSection('timer', this)">Stability Timer</div>
+    </div>
+</nav>
+
+<main>
+
+    <!-- COMMAND HUB -->
+    <section id="hub" class="active">
+        <h2>4.7 Operations Hub</h2>
+        <div class="card">
+            <h3>Daily Briefing</h3>
+            <p>Welcome, Jackal. In 4.7, raw vendor sales are dead as a primary income loop. Our mission is to feed the Org's <strong>Tier Zero Fabricator</strong> with high-quality ore. Everything you mine should be evaluated against one question: <em>does this rock score 700+ quality?</em> If yes, extract. If not, move on. High-quality minerals crafted into gear are worth multiples of their raw sell price.</p>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3>Priority: Quantanium</h3>
+                <p>Status: <span style="color:var(--danger)">VOLATILE</span></p>
+                <p>Best surface deposits on Lyria (Crusader) and Pyro III. 15-minute volatility timer from first extraction. Start timer immediately, plot refinery route before cracking.</p>
+            </div>
+            <div class="card">
+                <h3>Priority: Bexalite</h3>
+                <p>Status: <span style="color:var(--success)">STABLE</span></p>
+                <p>Primary Fabricator input ore. Target 700+ quality scores only. Best concentrations at HUR-L3 asteroid belts (Stanton) and Pyro I — Fairo surface deposits.</p>
+            </div>
+            <div class="card">
+                <h3>New in 4.7: Multi-Mineral Rocks</h3>
+                <p>Status: <span style="color:var(--accent-blue)">ACTIVE</span></p>
+                <p>Rocks now carry up to 3 ore types each with their own quality score. Evaluate all sub-materials before deciding to skip. A 900+ sub-material on a low-value primary rock is still worth extracting.</p>
+            </div>
+            <div class="card">
+                <h3>New in 4.7: Breaker Stations</h3>
+                <p>Status: <span style="color:var(--jackal-gold)">LIVE</span></p>
+                <p>QV Breaker Stations in the Nyx/Keeger Belt unlock team-based ops with exclusive rewards. Requires Fighter + Miner + Crafter + Hauler roles. See the Breaker Station Guide for full walkthrough.</p>
+            </div>
+            <div class="card">
+                <h3>System: Nyx</h3>
+                <p>Status: <span style="color:var(--accent-blue)">ACTIVE</span></p>
+                <p>Home of Levski (full refinery hub) and the Breaker Stations. Glaciem Ring suits solo fast-grab runs. Keeger Belt has Quantanium with less competition than Pyro III. No UEE law. Always base at Levski first.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MINING 101 -->
+    <section id="training">
+        <h2>Recruit Training</h2>
+        <div class="card">
+            <h3>The 4.7 Golden Rules</h3>
+            <p><strong>Rule 1 — Quality beats everything.</strong> A 1000-quality Titanium rock is more valuable to the Org than a 0-quality Quantanium. Quality score (0–1000) directly determines crafting output from the Fabricator. Target 700+ on every ore, every run.</p>
+            <p style="margin-top:8px;"><strong>Rule 2 — Rocks have multiple ores now.</strong> In 4.7 each rock carries a primary ore plus up to 2 sub-materials. Check all three scores before deciding to skip. See the Multi-Mineral Rocks section for the full decision framework.</p>
+            <p style="margin-top:8px;"><strong>Rule 3 — The Fabricator Loop is the mission.</strong> Raw vendor sales are a fallback. Mine → Refine → Fabricate → Supply the Org. Every high-quality batch you bring in translates to better gear for Jackal combat pilots.</p>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h4>1. Scanning</h4>
+                <p>Ping (TAB) to find clusters. Get within 200m to resolve full stats: Quality score, Resistance, and Instability. Don't crack blind — always resolve composition first.</p>
+            </div>
+            <div class="card">
+                <h4>2. Evaluate the Rock</h4>
+                <p>Check primary quality score. Check both sub-materials. Run the Rock Eval Checklist mentally or use the interactive checklist in the Missions & Org section. Skip anything under 300.</p>
+            </div>
+            <div class="card">
+                <h4>3. Fracturing</h4>
+                <p>Keep the laser in the GREEN band. If it spikes RED your cargo explodes. Use Rime module to dampen instability. Deploy a gadget (BoreMax or Sabir — never both) before firing on difficult rocks.</p>
+            </div>
+            <div class="card">
+                <h4>4. Extraction</h4>
+                <p>After fracture, use minimum power to pull fragments into cargo. Rushing the extraction phase causes overcharge and secondary detonation. Each sub-material enters cargo as a separate stack.</p>
+            </div>
+            <div class="card">
+                <h4>5. Transport</h4>
+                <p>Quantanium: 15-minute timer starts on first extraction. Haul direct to refinery — no stops. All other ores: stable, but watch for pirates. Escort recommended on Pyro or belt runs.</p>
+            </div>
+            <div class="card">
+                <h4>6. Refine &amp; Deliver</h4>
+                <p>Submit to refinery using Dinyx Solventation for max yield. Collect refined boxes and haul to the Fabricator terminal. Sort batches by quality score before submitting — don't mix 900+ with 300- in the same job.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MINERAL DATABASE (FULL) -->
+    <section id="minerals">
+        <h2>Mineral Database</h2>
+        <div class="card" style="padding-bottom:8px;">
+            <p style="margin:0 0 14px; color:#aaa; font-size:0.88rem;">Full list of every minable material in Star Citizen 4.7. Sorted by mining method. Use the tabs to filter. Left border colour = rarity tier.</p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:6px;">
+                <span><span class="cat-label cat-ship">SHIP</span> Ship laser (Prospector / MOLE)</span>
+                <span><span class="cat-label cat-roc">ROC</span> Ground vehicle (ROC / ROC-DS)</span>
+                <span><span class="cat-label cat-fps">FPS</span> Hand tool (Pyro RYT + OreBit)</span>
+                <span><span class="cat-label cat-pyro">PYRO</span> Pyro system exclusive</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="mineral-tab-bar">
+                <div class="mineral-tab active" onclick="switchMineralTab(this,'mtab-all')">All</div>
+                <div class="mineral-tab" onclick="switchMineralTab(this,'mtab-ship')">Ship Mining</div>
+                <div class="mineral-tab" onclick="switchMineralTab(this,'mtab-roc')">ROC / Ground</div>
+                <div class="mineral-tab" onclick="switchMineralTab(this,'mtab-fps')">FPS / Hand</div>
+                <div class="mineral-tab" onclick="switchMineralTab(this,'mtab-pyro')">Pyro Exclusives</div>
+            </div>
+
+            <!-- ALL -->
+            <div id="mtab-all" class="mineral-panel active">
+                <table>
+                    <thead><tr><th>Material</th><th>Type</th><th>Method</th><th>Crafting Use</th><th>Jackal Priority</th></tr></thead>
+                    <tbody>
+                        <!-- LEGENDARY -->
+                        <tr class="tier-legendary"><td><strong>Quantanium</strong></td><td>Volatile Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Quantum Fuel, Components</td><td><span class="badge badge-red">Critical</span></td></tr>
+                        <tr class="tier-legendary"><td><strong>Janalite</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span></td><td>Ultra-rare components</td><td><span class="badge badge-red">Legendary</span></td></tr>
+                        <!-- EPIC -->
+                        <tr class="tier-epic"><td><strong>Bexalite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Tier-1 Components</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Taranite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Armor, Hull plating</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Borase</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Advanced electronics</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Hadanite</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td>High-end fabrication</td><td><span class="badge badge-green">High</span></td></tr>
+                        <!-- RARE -->
+                        <tr class="tier-rare"><td><strong>Gold</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Electronics, Circuits</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Laranite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>General crafting</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Agricium</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Agricultural tech</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Hephaestanite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>General manufacturing</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Diamond</strong></td><td>Ore / Gem</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-fps">FPS</span></td><td>Optics, Industrial</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Aphorite</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td>Decorative, Electronics</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Dolivine</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td>Industrial, Decorative</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <!-- Pyro -->
+                        <tr class="tier-epic"><td><strong>Stileron</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-pyro">PYRO</span></td><td>Pyro Components</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Savrilium</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-pyro">PYRO</span></td><td>Advanced Alloys</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Riccite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-pyro">PYRO</span></td><td>Pyro manufacturing</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <!-- UNCOMMON -->
+                        <tr class="tier-uncommon"><td><strong>Copper</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Wiring, Basic electronics</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Tungsten</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Heavy components</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Iron</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Structural</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Corundum</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Abrasives, Optics</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Beryl</strong></td><td>Ore / Gem</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-fps">FPS</span></td><td>Optics, Crystals</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Jaclium</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span></td><td>Precision components</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Saldynium</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span></td><td>Specialty crafting</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <!-- COMMON -->
+                        <tr class="tier-common"><td>Titanium</td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Bulk construction</td><td><span style="color:#555">Filler</span></td></tr>
+                        <tr class="tier-common"><td>Aluminum</td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Bulk construction</td><td><span style="color:#555">Filler</span></td></tr>
+                        <tr class="tier-common"><td>Quartz</td><td>Mineral</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-fps">FPS</span></td><td>Electronics substrate</td><td><span style="color:#555">Filler</span></td></tr>
+                        <tr class="tier-common"><td>Glacosite</td><td>Ground Mineral</td><td><span class="cat-label cat-roc">ROC</span></td><td>Coolant materials</td><td><span style="color:#555">Situational</span></td></tr>
+                        <tr class="tier-common"><td>Feynmaline</td><td>Ground Mineral</td><td><span class="cat-label cat-roc">ROC</span></td><td>Specialty compounds</td><td><span style="color:#555">Situational</span></td></tr>
+                        <tr class="tier-common"><td>Carinite</td><td>Ground Mineral</td><td><span class="cat-label cat-roc">ROC</span></td><td>Specialty compounds</td><td><span style="color:#555">Situational</span></td></tr>
+                        <tr class="tier-common"><td>Inert Materials</td><td>Waste</td><td>All</td><td>None</td><td><span style="color:#333">Dump</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SHIP MINING -->
+            <div id="mtab-ship" class="mineral-panel">
+                <p style="color:#aaa; font-size:0.85rem; margin-bottom:12px;">Mined with Prospector or MOLE ship laser. Requires refining before sale or fabricator use.</p>
+                <table>
+                    <thead><tr><th>Material</th><th>Rarity</th><th>Crafting Use</th><th>Notes</th></tr></thead>
+                    <tbody>
+                        <tr class="tier-legendary"><td><strong>Quantanium</strong></td><td><span class="badge badge-red">Legendary</span></td><td>Quantum Fuel, Components</td><td>Volatile — 15 min timer. Highest value.</td></tr>
+                        <tr class="tier-epic"><td><strong>Bexalite</strong></td><td><span class="badge badge-green">Epic</span></td><td>Tier-1 Components</td><td>Jackal primary target. HUR-L3 belts.</td></tr>
+                        <tr class="tier-epic"><td><strong>Taranite</strong></td><td><span class="badge badge-green">Epic</span></td><td>Armor, Hull plating</td><td>High resistance rocks. Use Brandt/Torrent.</td></tr>
+                        <tr class="tier-epic"><td><strong>Borase</strong></td><td><span class="badge badge-green">Epic</span></td><td>Advanced electronics</td><td>Less common than Bexalite. Worth the hunt.</td></tr>
+                        <tr class="tier-rare"><td><strong>Gold</strong></td><td><span class="badge badge-blue">Rare</span></td><td>Electronics, Circuits</td><td>Density issue — lower volume per SCU.</td></tr>
+                        <tr class="tier-rare"><td><strong>Laranite</strong></td><td><span class="badge badge-blue">Rare</span></td><td>General crafting</td><td>Good quality-farming ore. Reliable deposits.</td></tr>
+                        <tr class="tier-rare"><td><strong>Agricium</strong></td><td><span class="badge badge-blue">Rare</span></td><td>Agricultural tech</td><td>Find rocks with 40%+ for best haul.</td></tr>
+                        <tr class="tier-rare"><td><strong>Hephaestanite</strong></td><td><span class="badge badge-blue">Rare</span></td><td>General manufacturing</td><td>Common on most moons. Good volume ore.</td></tr>
+                        <tr class="tier-rare"><td><strong>Diamond</strong></td><td><span class="badge badge-blue">Rare</span></td><td>Optics, Industrial</td><td>Also found in FPS deposits.</td></tr>
+                        <tr class="tier-uncommon"><td>Copper</td><td><span class="badge badge-orange">Uncommon</span></td><td>Wiring, Electronics</td><td>Sub-material filler. Take if high quality.</td></tr>
+                        <tr class="tier-uncommon"><td>Tungsten</td><td><span class="badge badge-orange">Uncommon</span></td><td>Heavy components</td><td>Dense ore — good 700+ quality play.</td></tr>
+                        <tr class="tier-uncommon"><td>Iron</td><td><span class="badge badge-orange">Uncommon</span></td><td>Structural</td><td>Bulk filler. Only take 700+ quality.</td></tr>
+                        <tr class="tier-uncommon"><td>Corundum</td><td><span class="badge badge-orange">Uncommon</span></td><td>Abrasives, Optics</td><td>Low yield. Situational pick.</td></tr>
+                        <tr class="tier-uncommon"><td>Beryl</td><td><span class="badge badge-orange">Uncommon</span></td><td>Optics, Crystals</td><td>Also harvestable by hand in asteroid fields.</td></tr>
+                        <tr class="tier-common"><td>Titanium</td><td>Common</td><td>Bulk construction</td><td>Don't skip 900+ quality runs.</td></tr>
+                        <tr class="tier-common"><td>Aluminum</td><td>Common</td><td>Bulk construction</td><td>Cheapest ore. Filler only.</td></tr>
+                        <tr class="tier-common"><td>Quartz</td><td>Common</td><td>Electronics substrate</td><td>Low value. Dump unless 900+ quality.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ROC / GROUND -->
+            <div id="mtab-roc" class="mineral-panel">
+                <p style="color:#aaa; font-size:0.85rem; margin-bottom:12px;">Mined with the Greycat ROC or ROC-DS ground vehicle. No refining needed for gemstones — sell direct at any trade terminal.</p>
+                <table>
+                    <thead><tr><th>Material</th><th>Type</th><th>Value</th><th>Best Locations</th></tr></thead>
+                    <tbody>
+                        <tr class="tier-epic"><td><strong>Hadanite</strong></td><td>Gemstone</td><td><span class="badge badge-green">~275 aUEC/unit</span></td><td>Daymar (Crusader), Lyria. Cave deposits and surface clusters.</td></tr>
+                        <tr class="tier-rare"><td><strong>Aphorite</strong></td><td>Gemstone</td><td><span class="badge badge-blue">~152 aUEC/unit</span></td><td>Nearly all moons. Daymar is best concentration.</td></tr>
+                        <tr class="tier-rare"><td><strong>Dolivine</strong></td><td>Gemstone</td><td><span class="badge badge-blue">~130 aUEC/unit</span></td><td>Yela, Magda, Ita, MicroTech moons.</td></tr>
+                        <tr class="tier-uncommon"><td>Glacosite</td><td>Ground Mineral</td><td><span class="badge badge-orange">Low</span></td><td>Cold moon surfaces. Situational.</td></tr>
+                        <tr class="tier-uncommon"><td>Feynmaline</td><td>Ground Mineral</td><td><span class="badge badge-orange">Low</span></td><td>Various moon surfaces.</td></tr>
+                        <tr class="tier-uncommon"><td>Carinite</td><td>Ground Mineral</td><td><span class="badge badge-orange">Low</span></td><td>Various moon surfaces.</td></tr>
+                    </tbody>
+                </table>
+                <p style="color:#aaa; font-size:0.82rem; margin-top:12px;">💡 ROC tip: Scan for tight clusters of 2k–3k signature range. Land at the densest cluster first to maximise haul per trip. Prioritise Hadanite above all else.</p>
+            </div>
+
+            <!-- FPS / HAND -->
+            <div id="mtab-fps" class="mineral-panel">
+                <p style="color:#aaa; font-size:0.85rem; margin-bottom:12px;">Mined with the Pyro RYT Multi-Tool + OreBit attachment. Stored in personal inventory — no ship required. Sell at any trade terminal or Mining Outpost.</p>
+                <table>
+                    <thead><tr><th>Material</th><th>Rarity</th><th>Value</th><th>Notes</th></tr></thead>
+                    <tbody>
+                        <tr class="tier-legendary"><td><strong>Janalite</strong></td><td><span class="badge badge-red">Legendary</span></td><td><span class="badge badge-red">~77,000,000 aUEC/SCU</span></td><td>Extremely rare. Found in small rock deposits. Game-changing find.</td></tr>
+                        <tr class="tier-epic"><td><strong>Hadanite</strong></td><td><span class="badge badge-green">Epic</span></td><td><span class="badge badge-green">~275,000 aUEC/SCU</span></td><td>Best starter gem. Daymar caves. No refining needed.</td></tr>
+                        <tr class="tier-rare"><td><strong>Aphorite</strong></td><td><span class="badge badge-blue">Rare</span></td><td><span class="badge badge-blue">~152,500 aUEC/SCU</span></td><td>Common on most moons. Good volume play.</td></tr>
+                        <tr class="tier-rare"><td><strong>Dolivine</strong></td><td><span class="badge badge-blue">Rare</span></td><td><span class="badge badge-blue">~130,000 aUEC/SCU</span></td><td>Found near MicroTech moons and Yela.</td></tr>
+                        <tr class="tier-uncommon"><td><strong>Saldynium</strong></td><td><span class="badge badge-orange">Uncommon</span></td><td><span class="badge badge-orange">~125,000 aUEC/SCU</span></td><td>Silver-toned gem. Emerging crafting material.</td></tr>
+                        <tr class="tier-uncommon"><td><strong>Jaclium</strong></td><td><span class="badge badge-orange">Uncommon</span></td><td><span class="badge badge-orange">~110,000 aUEC/SCU</span></td><td>Precision component gem. Rarer than Dolivine.</td></tr>
+                        <tr class="tier-common"><td>Diamond</td><td>Common</td><td>~4,500 aUEC/unit</td><td>Also mineable by ship. Lower value in FPS context.</td></tr>
+                        <tr class="tier-common"><td>Beryl</td><td>Common</td><td>~2,700 aUEC/unit</td><td>Found in asteroid fields. Low value, high volume.</td></tr>
+                        <tr class="tier-common"><td>Quartz</td><td>Common</td><td>Low</td><td>Background ore. Not worth a dedicated run.</td></tr>
+                    </tbody>
+                </table>
+                <p style="color:#aaa; font-size:0.82rem; margin-top:12px;">⚠️ Get the MacFlex Arms Orange "Rucksack" Core to dramatically extend FPS mining trip length. Use QuikFlares (25 aUEC each) in caves to mark your exit route.</p>
+            </div>
+
+            <!-- PYRO EXCLUSIVES -->
+            <div id="mtab-pyro" class="mineral-panel">
+                <p style="color:#aaa; font-size:0.85rem; margin-bottom:12px;">Ores exclusive to or significantly more abundant in the Pyro system. These are the premium targets for organised Jackal Pyro operations.</p>
+                <table>
+                    <thead><tr><th>Material</th><th>Type</th><th>Crafting Use</th><th>Primary Location</th></tr></thead>
+                    <tbody>
+                        <tr class="tier-epic"><td><strong>Stileron</strong></td><td>Ship Ore</td><td>Pyro-grade components, advanced alloys</td><td>Pyro I (Fairo), Akiro Cluster</td></tr>
+                        <tr class="tier-epic"><td><strong>Savrilium</strong></td><td>Ship Ore</td><td>Advanced alloys, structural fabrication</td><td>Pyro asteroid belts, Pyro II</td></tr>
+                        <tr class="tier-rare"><td><strong>Riccite</strong></td><td>Ship Ore</td><td>Pyro manufacturing base material</td><td>Scattered across all Pyro zones</td></tr>
+                        <tr class="tier-rare"><td><strong>Lindinium</strong></td><td>Ship Ore</td><td>Specialty components</td><td>Pyro asteroid fields</td></tr>
+                    </tbody>
+                </table>
+                <div style="margin-top:16px;" class="economy-alert">
+                    <h4>⚠️ Pyro Ore Note</h4>
+                    <p>Pyro exclusives currently have limited refinery options in-system. Refine at Ruin Station or haul to Pyro Gateway before jumping back to Stanton. UEX Corp (uexcorp.space) has the most accurate current pricing for these ores as they fluctuate heavily.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STABILITY TIMER -->
+    <section id="timer">
+        <h2>Stability Timer</h2>
+        <div class="card">
+            <p style="color:#aaa;">Start when extraction begins. Reach a refinery before zero — or the Quantanium goes boom.</p>
+            <label>Preset</label>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                <button onclick="setTimer(15)" style="flex:1; margin-top:0; padding:8px;">15 min — Quantanium</button>
+                <button onclick="setTimer(10)" style="flex:1; margin-top:0; padding:8px;">10 min — Custom</button>
+                <button onclick="setTimer(5)"  style="flex:1; margin-top:0; padding:8px;">5 min — Short Run</button>
+            </div>
+            <label>Custom Duration (minutes)</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="number" id="customMinutes" placeholder="e.g. 12" min="1" max="60" style="max-width:120px;" />
+                <button onclick="setCustomTimer()" style="margin-top:0; padding:10px 16px;">Set</button>
+            </div>
+            <div id="timer-display">15:00</div>
+            <div class="timer-controls">
+                <button onclick="startTimer()">&#9654; Start</button>
+                <button onclick="pauseTimer()">&#9646;&#9646; Pause</button>
+                <button class="btn-danger" onclick="resetTimer()">&#8635; Reset</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUALITY SCORE GUIDE -->
+    <section id="quality">
+        <h2>Quality Score Guide</h2>
+        <div class="card">
+            <h3>The 0–1000 System (4.7)</h3>
+            <p>Every minable material in 4.7 now rolls with a quality score from <strong>0 to 1000</strong>. This score directly determines crafting value — not just vendor price. A low-quality Quantanium is nearly worthless for fabrication. Stop chasing rare ores blindly. Chase <em>high-score</em> ores.</p>
+        </div>
+        <div class="card">
+            <h3>Tier Breakdown</h3>
+            <div class="quality-tier">
+                <div class="tier-label"><span class="badge badge-red">0 – 299</span></div>
+                <div class="quality-bar-wrap" style="flex:1"><div class="quality-bar-fill" style="width:30%; background: var(--danger);">JUNK</div></div>
+                <div class="tier-desc">Sell raw or dump. No crafting value.</div>
+            </div>
+            <div class="quality-tier">
+                <div class="tier-label"><span class="badge badge-orange">300 – 599</span></div>
+                <div class="quality-bar-wrap" style="flex:1"><div class="quality-bar-fill" style="width:60%; background: var(--jackal-orange);">LOW</div></div>
+                <div class="tier-desc">Vendor sale only. Marginal crafting bonus.</div>
+            </div>
+            <div class="quality-tier">
+                <div class="tier-label"><span class="badge badge-blue">600 – 699</span></div>
+                <div class="quality-bar-wrap" style="flex:1"><div class="quality-bar-fill" style="width:70%; background: var(--accent-blue);">KEEP</div></div>
+                <div class="tier-desc">Acceptable for crafting common items.</div>
+            </div>
+            <div class="quality-tier">
+                <div class="tier-label"><span class="badge badge-green">700 – 899</span></div>
+                <div class="quality-bar-wrap" style="flex:1"><div class="quality-bar-fill" style="width:85%; background: var(--success);">PRIORITY</div></div>
+                <div class="tier-desc">Jackal target threshold. Strong crafting output.</div>
+            </div>
+            <div class="quality-tier">
+                <div class="tier-label"><span class="badge badge-green">900 – 1000</span></div>
+                <div class="quality-bar-wrap" style="flex:1"><div class="quality-bar-fill" style="width:100%; background: #ffe066; color:#000;">ELITE</div></div>
+                <div class="tier-desc">Reserve for Fabricator. High-demand supply runs.</div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Field Decision Rule</h3>
+            <p>Quick call when scanning a rock:</p>
+            <div class="rock-diagram">
+                Quality &lt; 300  → <span class="rock-junk">SKIP IT</span><br>
+                Quality 300–699 → <span class="rock-secondary">Vendor sale only — fill cargo if nothing better nearby</span><br>
+                Quality 700+    → <span class="rock-primary">EXTRACT — this feeds the Fabricator Loop</span><br>
+                Quality 900+    → <span style="color:#ffe066;">PRIORITY EXTRACT — flag for Org supply run</span>
+            </div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;">Remember: a 700+ common Titanium rock beats a 200-score Quantanium for crafting purposes every time.</p>
+        </div>
+    </section>
+
+    <!-- MULTI-MINERAL ROCKS -->
+    <section id="multimineral">
+        <h2>Multi-Mineral Rocks (4.7)</h2>
+        <div class="card">
+            <h3>What Changed in 4.7</h3>
+            <p>Rocks no longer contain a single ore. In 4.7, each rock can contain a <strong>primary material</strong> plus up to <strong>two sub-materials</strong>, each with their own quality scores and percentages. This changes how you evaluate every rock you scan.</p>
+        </div>
+        <div class="card">
+            <h3>Reading a Multi-Mineral Rock</h3>
+            <div class="rock-diagram">
+                ┌─────────────────────────────────────┐<br>
+                │  ROCK SCAN RESULT                   │<br>
+                │                                     │<br>
+                │  <span class="rock-primary">PRIMARY:   Bexalite  62%  Q:820</span>   │<br>
+                │  <span class="rock-secondary">SUB-1:     Taranite  25%  Q:640</span>   │<br>
+                │  <span class="rock-junk">SUB-2:     Titanium  13%  Q:210</span>   │<br>
+                │                                     │<br>
+                │  Resistance: Medium                 │<br>
+                │  Instability: Low                   │<br>
+                └─────────────────────────────────────┘
+            </div>
+        </div>
+        <div class="card">
+            <h3>Evaluation Strategy</h3>
+            <div class="stat-row"><span><span class="stat-icon">🥇</span> Primary ore score ≥ 700</span><span class="badge badge-green">Always Extract</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🥈</span> Sub-material score ≥ 700 (even if primary is low)</span><span class="badge badge-blue">Extract if cargo space allows</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⚖️</span> Mixed scores — primary low, sub high</span><span class="badge badge-orange">Judgment call — check cargo fill %</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🗑️</span> All scores below 300</span><span class="badge badge-red">Skip — move on</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top: 12px;">After fracturing, each sub-material enters your cargo hold as a separate stack with its own quality rating. Sort before refining — don't mix high and low quality batches into the same refinery job.</p>
+        </div>
+    </section>
+
+    <!-- FABRICATOR LOOP -->
+    <section id="fabricator">
+        <h2>The Fabricator Loop</h2>
+        <div class="card">
+            <h3>What Is It?</h3>
+            <p>The <strong>Tier Zero Fabricator</strong> is Star Citizen's first player-driven crafting system, introduced in 4.7. It lets players manufacture FPS gear — weapons, armor, and components — directly from refined minerals. The Jackals' mining operation exists to feed this loop. Raw vendor sales are secondary.</p>
+        </div>
+        <div class="card">
+            <h3>The Full Loop</h3>
+            <div class="loop-step">
+                <div class="loop-num">1</div>
+                <div class="loop-body"><h4>Extract High-Quality Ore</h4><p>Target 700+ quality rocks. Multi-mineral rocks count — any sub-material above 700 is useful.</p></div>
+            </div>
+            <div class="loop-step">
+                <div class="loop-num">2</div>
+                <div class="loop-body"><h4>Refine at a Refinery Deck</h4><p>Submit ore for refining. Choose your method — Dinyx Solventation gives the best yield for most ores. Pay the processing fee; get refined material boxes out.</p></div>
+            </div>
+            <div class="loop-step">
+                <div class="loop-num">3</div>
+                <div class="loop-body"><h4>Transport to a Station with a Fabricator</h4><p>Haul refined boxes to a station with a Tier Zero Fabricator terminal. Currently available at major orbital stations in Stanton.</p></div>
+            </div>
+            <div class="loop-step">
+                <div class="loop-num">4</div>
+                <div class="loop-body"><h4>Craft Components &amp; Gear</h4><p>Use the Fabricator terminal to select a blueprint. Insert your refined materials. Quality score of input directly affects the stat roll on the crafted item.</p></div>
+            </div>
+            <div class="loop-step">
+                <div class="loop-num">5</div>
+                <div class="loop-body"><h4>Equip, Sell, or Supply the Org</h4><p>Crafted gear goes to Jackal combat pilots, sold on player markets, or stockpiled for Org operations. High-quality outputs command a premium over NPC vendor gear.</p></div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Why Quality Matters at Every Step</h3>
+            <table>
+                <thead><tr><th>Input Quality</th><th>Crafted Item Result</th><th>Org Value</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge badge-red">0–299</span></td><td>Base stats only, no bonus rolls</td><td>None — don't bother</td></tr>
+                    <tr><td><span class="badge badge-orange">300–699</span></td><td>Minor stat improvements</td><td>Low — vendor or filler</td></tr>
+                    <tr><td><span class="badge badge-blue">700–899</span></td><td>Solid bonus rolls, reliable output</td><td>High — primary supply target</td></tr>
+                    <tr><td><span class="badge badge-green">900–1000</span></td><td>Max stat rolls, rare bonus effects</td><td>Critical — Org priority reserve</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- DANGER RATINGS -->
+    <section id="danger">
+        <h2>Ore Danger Ratings</h2>
+        <div class="card">
+            <p>Not all ores are equal risk. Before you crack a rock, know what's inside and how badly it can hurt you if you lose control. These ratings combine volatility, instability behaviour, explosion multiplier, and 4.7 pirate AI aggression.</p>
+        </div>
+
+        <div class="card danger-card">
+            <h3>🔴 EXTREME — Quantanium</h3>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-red">Very High</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-red">15 min from extraction</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-red">High — spikes fast</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-red">Extreme — they know you're loaded</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Use Rime module to reduce instability spikes. Escort required for MOLE runs. Start the Stability Timer the moment first fragment enters cargo. Do not stop at a station mid-haul.</p>
+        </div>
+
+        <div class="card warning-card">
+            <h3>🟠 HIGH — Bexalite / Taranite</h3>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-orange">Moderate</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None — stable ore</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-orange">Moderate — manageable with Surge</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-orange">High — valuable cargo attracts attention</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Keep laser in green zone. Surge module recommended. Resistance can be high — use Brandt or Torrent if fracture is slow. No timer pressure but still a pirate magnet.</p>
+        </div>
+
+        <div class="card warning-card">
+            <h3>🟡 MEDIUM — Gold / Laranite</h3>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-blue">Low–Moderate</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-blue">Low — forgiving extraction window</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-blue">Medium — recognisable but not top priority</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Good training ore for new Jackals. Stable enough to practice laser control. Still worth an escort in 4.7 due to smarter AI pirate flanking behaviour.</p>
+        </div>
+
+        <div class="card safe-card">
+            <h3>🟢 LOW — Titanium / Agricium</h3>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-green">Minimal</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-green">Very Low</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-green">Low — not worth their time</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Solo-safe in 4.7. Good for quality-farming runs where you're filling cargo with 700+ common material for the Fabricator Loop. Don't dismiss these — a 900-score Titanium has real crafting value.</p>
+        </div>
+    </section>
+
+    <!-- REFINERY LOCATIONS -->
+    <section id="refineries">
+        <h2>Refinery Locations</h2>
+
+        <div class="card">
+            <p style="color:#aaa; margin:0 0 16px;">All refinery jobs run in real-time regardless of whether you're logged in. Choose your method based on how urgently you need output and how much you want to spend.</p>
+            <h3>Refining Methods Compared</h3>
+            <div class="method-row" style="font-weight:bold; color:var(--jackal-gold); font-size:0.8rem;">
+                <span>Method</span><span>Yield</span><span>Cost</span><span>Speed</span>
+            </div>
+            <div class="method-row"><span class="method-name">Dinyx Solventation</span><span class="badge badge-green">High</span><span class="badge badge-green">Low</span><span class="badge badge-red">Very Slow</span></div>
+            <div class="method-row"><span class="method-name">Ferron Exchange</span><span class="badge badge-blue">Med-High</span><span class="badge badge-blue">Medium</span><span class="badge badge-blue">Medium</span></div>
+            <div class="method-row"><span class="method-name">Pyrometric Chromalysis</span><span class="badge badge-green">High</span><span class="badge badge-red">High</span><span class="badge badge-orange">Slow</span></div>
+            <div class="method-row"><span class="method-name">Electrostarolysis</span><span class="badge badge-blue">Medium</span><span class="badge badge-blue">Medium</span><span class="badge badge-orange">Slow</span></div>
+            <div class="method-row"><span class="method-name">Gaskin Process</span><span class="badge badge-blue">Medium</span><span class="badge badge-red">High</span><span class="badge badge-green">Fast</span></div>
+            <div class="method-row"><span class="method-name">XCR Reaction</span><span class="badge badge-orange">Low-Med</span><span class="badge badge-blue">Medium</span><span class="badge badge-green">Fast</span></div>
+            <div class="method-row"><span class="method-name">Cormack Method</span><span class="badge badge-red">Low</span><span class="badge badge-blue">Medium</span><span class="badge badge-green">Fastest</span></div>
+            <p style="color:#555; font-size:0.8rem; margin-top:10px;">Jackal default: <strong style="color:var(--jackal-gold)">Dinyx Solventation</strong> for max yield on high-quality ore. Use <strong style="color:var(--accent-blue)">Ferron Exchange</strong> if you need output faster with minimal yield loss (~2%).</p>
+        </div>
+
+        <div class="card">
+            <h3>Stanton Refineries</h3>
+            <div class="system-tab-bar">
+                <div class="sys-tab active" onclick="switchSysTabs(this,'stanton-tab-hur')">Hurston</div>
+                <div class="sys-tab" onclick="switchSysTabs(this,'stanton-tab-cru')">Crusader</div>
+                <div class="sys-tab" onclick="switchSysTabs(this,'stanton-tab-arc')">ArcCorp</div>
+                <div class="sys-tab" onclick="switchSysTabs(this,'stanton-tab-mic')">MicroTech</div>
+                <div class="sys-tab" onclick="switchSysTabs(this,'stanton-tab-gate')">Pyro Gateway</div>
+            </div>
+
+            <div id="stanton-tab-hur" class="sys-panel active">
+                <table><thead><tr><th>Station</th><th>Location</th><th>Ore Specialisation</th></tr></thead><tbody>
+                    <tr><td>Green Glade Station</td><td>Hurston L1</td><td>Titanium, Laranite</td></tr>
+                    <tr><td>Faithful Dream Station</td><td>Hurston L2</td><td>Gold, Copper</td></tr>
+                    <tr><td>HUR-L3 (various Rest Stops)</td><td>Hurston L3/L4/L5</td><td>Bexalite, Taranite</td></tr>
+                </tbody></table>
+                <p class="price-update">⚠️ HUR-L3 asteroid belts are prime Bexalite territory. High pirate activity — escort recommended.</p>
+            </div>
+
+            <div id="stanton-tab-cru" class="sys-panel">
+                <table><thead><tr><th>Station</th><th>Location</th><th>Ore Specialisation</th></tr></thead><tbody>
+                    <tr><td>Ambitious Dream Station</td><td>Crusader L1</td><td>Quantanium, Agricium</td></tr>
+                    <tr><td>Lyria Surface (no refinery)</td><td>Crusader Moon</td><td>Quantanium — haul to CRU-L1</td></tr>
+                    <tr><td>Daymar Surface (no refinery)</td><td>Crusader Moon</td><td>Bexalite, Laranite — haul to CRU-L1</td></tr>
+                </tbody></table>
+                <p class="price-update">⚠️ Lyria is the premier Quantanium surface mine. Timer starts the moment you fill cargo — haul direct to CRU-L1.</p>
+            </div>
+
+            <div id="stanton-tab-arc" class="sys-panel">
+                <table><thead><tr><th>Station</th><th>Location</th><th>Ore Specialisation</th></tr></thead><tbody>
+                    <tr><td>Wide Forest Station</td><td>ArcCorp L1</td><td>Gold, Laranite</td></tr>
+                    <tr><td>Lively Pathway Station</td><td>ArcCorp L2</td><td>Titanium, Copper</td></tr>
+                    <tr><td>Faint Glen Station</td><td>ArcCorp L4</td><td>Taranite, Gold</td></tr>
+                </tbody></table>
+            </div>
+
+            <div id="stanton-tab-mic" class="sys-panel">
+                <table><thead><tr><th>Station</th><th>Location</th><th>Ore Specialisation</th></tr></thead><tbody>
+                    <tr><td>Shallow Frontier Station</td><td>MicroTech L1</td><td>Laranite, Agricium</td></tr>
+                    <tr><td>Long Forest Station</td><td>MicroTech L2</td><td>Titanium, Gold</td></tr>
+                    <tr><td>MIC-L5 Rest Stops</td><td>MicroTech L5</td><td>Bexalite (rare deposits)</td></tr>
+                </tbody></table>
+            </div>
+
+            <div id="stanton-tab-gate" class="sys-panel">
+                <table><thead><tr><th>Service</th><th>Notes</th></tr></thead><tbody>
+                    <tr><td>Refinement Processing</td><td>Full refinery deck at the Stanton–Pyro jump point. Useful mid-transit refinery stop.</td></tr>
+                    <tr><td>Mining Support Centre</td><td>Equipment rentals, laser modules, mining gadgets available on-site.</td></tr>
+                    <tr><td>Vantage Rentals</td><td>Ship rentals including Prospector. Good fallback if yours is in the shop.</td></tr>
+                </tbody></table>
+                <p class="price-update">Pyro Gateway is a critical staging point for Pyro runs — refine here before jumping if you're carrying Quantanium.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Pyro Refineries</h3>
+            <table><thead><tr><th>Station</th><th>System</th><th>Notes</th></tr></thead><tbody>
+                <tr><td>Ruin Station (Terminus)</td><td>Pyro</td><td>Main refinery hub in Pyro. High-traffic, lawless — expect pirate interdiction near the station.</td></tr>
+                <tr><td>Pyro Gateway</td><td>Stanton side of jump</td><td>Safest option for Pyro miners heading home. Refine before re-entering Stanton.</td></tr>
+            </tbody></table>
+            <p class="price-update">⚠️ Pyro has no NPC law enforcement. Always fly with an escort or in a group when hauling refined ore out of Pyro.</p>
+        </div>
+
+        <div class="card">
+            <h3>Nyx Refineries — Levski (Delamar)</h3>
+            <table><thead><tr><th>Service</th><th>Location</th><th>Notes</th></tr></thead><tbody>
+                <tr><td>Refinery Deck (x3)</td><td>Levski, Delamar</td><td>Multiple refinery terminals inside the facility. Full refining available — all methods supported.</td></tr>
+                <tr><td>Cargo Depots</td><td>Levski, Delamar</td><td>External freight elevators for large cargo transfers. Good for MOLE and hull haul offloads.</td></tr>
+                <tr><td>Mining Equipment</td><td>Levski, Delamar</td><td>Laser heads, modules, gadgets, and FPS mining tools available in-station. Stock up before heading into the belts.</td></tr>
+                <tr><td>Grand Barter</td><td>Levski, Delamar</td><td>Internal marketplace. Black-market adjacent — good for finding rare gear and trading off irregular cargo.</td></tr>
+            </tbody></table>
+            <p class="price-update">⚠️ Nyx has no UEE law enforcement. Levski is People's Alliance territory — respect their rules or face the residents. No CrimeStat consequences but player and NPC piracy is common in the belts.</p>
+        </div>
+    </section>
+
+    <!-- PYRO MINING ZONES -->
+    <section id="pyro">
+        <h2>Pyro Mining Zones</h2>
+
+        <div class="card economy-alert">
+            <h4>🔥 Why Go to Pyro?</h4>
+            <p>Pyro offers better odds at high-quality scores on premium ores and Pyro-exclusive materials not found in Stanton or Nyx. Stanton is consistent but heavily contested. Pyro is dangerous but rewards organised Jackal operations with rarer material distributions and less competition at remote asteroid fields. Always bring a combat escort. For lawless-system ops with better solo viability, see the <strong>Nyx Mining Zones</strong> section.</p>
+        </div>
+
+        <div class="card">
+            <h3>Pyro Planets & Moons</h3>
+
+            <div class="zone-card">
+                <h4>Pyro I — Fairo</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Bexalite</span>
+                    <span class="zone-ore">Taranite</span>
+                    <span class="zone-ore">Gold</span>
+                </div>
+                <p class="zone-note">Best overall planet for premium ore in Pyro. Surface and asteroid deposits. Pyro I is the Jackal primary target for fabricator-grade Bexalite runs. Moderate pirate presence.</p>
+            </div>
+
+            <div class="zone-card">
+                <h4>Pyro II — Monox</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Laranite</span>
+                    <span class="zone-ore">Titanium</span>
+                    <span class="zone-ore">Agricium</span>
+                </div>
+                <p class="zone-note">Common material belt. Good for quality-farming runs — fill cargo with 700+ Laranite for the Fabricator Loop. Lower risk than Pyro I.</p>
+            </div>
+
+            <div class="zone-card">
+                <h4>Pyro III — Vuur</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Quantanium</span>
+                    <span class="zone-ore">Taranite</span>
+                </div>
+                <p class="zone-note">High-value but extreme danger. Quantanium fields with heavy Ninetails and pirate gang presence. MOLE ops require 2+ combat escorts. Do not solo this zone.</p>
+            </div>
+
+            <div class="zone-card">
+                <h4>Akiro Cluster (Asteroid Belt)</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Bexalite</span>
+                    <span class="zone-ore">Quantanium</span>
+                    <span class="zone-ore">Taranite</span>
+                </div>
+                <p class="zone-note">Named asteroid cluster with a unique ore distribution profile. Higher chance of 900+ quality scores than planetary surface deposits. Difficult to navigate — bring a scanning-focused pilot.</p>
+            </div>
+
+            <div class="zone-card">
+                <h4>Pyro V Moons (x6)</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Titanium</span>
+                    <span class="zone-ore">Agricium</span>
+                    <span class="zone-ore">Gemstones</span>
+                </div>
+                <p class="zone-note">Each moon has a single gemstone type — makes ROC/FPS mining predictable. Good for Jackal recruits learning Pyro before moving to higher-risk zones. Low pirate activity on remote moons.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Pyro Survival Rules for Jackals</h3>
+            <div class="stat-row"><span>🛡️ Never enter Pyro without an escort or org fleet</span><span class="badge badge-red">Non-negotiable</span></div>
+            <div class="stat-row"><span>📡 Disable transponder before approaching asteroid fields</span><span class="badge badge-orange">Recommended</span></div>
+            <div class="stat-row"><span>🚀 Refine at Pyro Gateway before jumping back to Stanton</span><span class="badge badge-blue">Best practice</span></div>
+            <div class="stat-row"><span>💬 Coordinate in Jackal comms — share field locations securely</span><span class="badge badge-green">Standard protocol</span></div>
+            <div class="stat-row"><span>⏱️ Quantanium from Pyro III: get to Pyro Gateway fast</span><span class="badge badge-red">15 min timer</span></div>
+        </div>
+    </section>
+
+    <!-- NYX MINING ZONES -->
+    <section id="nyx">
+        <h2>Nyx Mining Zones</h2>
+
+        <div class="card economy-alert">
+            <h4>🌑 Why Go to Nyx?</h4>
+            <p>Nyx is the home of the QV Breaker Stations and the only system with Levski as a full refinery hub outside Stanton and Pyro. <strong>No UEE law enforcement.</strong> The Glaciem Ring suits fast solo grab runs. The Keeger Belt rewards longer endurance hauls. Both belts have less competition than Stanton and offer denser rock clusters. Nyx is also the staging point for all Breaker Station contracts — getting comfortable here is essential for Jackal ops.</p>
+        </div>
+
+        <div class="card">
+            <h3>Getting to Nyx</h3>
+            <div class="stat-row"><span>🚀 From Stanton</span><span class="badge badge-blue">Jump point at Stanton system edge</span></div>
+            <div class="stat-row"><span>🔥 From Pyro</span><span class="badge badge-blue">Jump point connects Pyro → Nyx directly</span></div>
+            <div class="stat-row"><span>⛽ Refuel / Restock</span><span class="badge badge-green">Levski on Delamar — full services</span></div>
+            <div class="stat-row"><span>🏴 Law Status</span><span class="badge badge-red">No UEE enforcement — lawless system</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;">Always plot to Levski first on your initial Nyx run to set your ship respawn and restock before heading into the belts. The belts are visually dark — nebula interference reduces scanner clarity. Bring a scanning-focused pilot if running in a group.</p>
+        </div>
+
+        <div class="card">
+            <h3>Glaciem Ring (Nyx Belt Alpha)</h3>
+            <div class="zone-card">
+                <h4>Overview</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Bexalite</span>
+                    <span class="zone-ore">Taranite</span>
+                    <span class="zone-ore">Gold</span>
+                    <span class="zone-ore">Laranite</span>
+                    <span class="zone-ore">Hephaestanite</span>
+                </div>
+                <p class="zone-note">A dense asteroid belt at roughly 8 AU from Nyx's star. Delamar and Levski sit inside the ring. The belt is visually cluttered — rocks are close together which makes navigation harder but scanning more productive per unit of travel. Best described as a fast-grab belt: high rock density means shorter distances between targets. <strong>Breaker Station contracts are issued here.</strong></p>
+            </div>
+
+            <div class="zone-card">
+                <h4>Delamar — Surface &amp; Cave Mining</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Hadanite</span>
+                    <span class="zone-ore">Aphorite</span>
+                    <span class="zone-ore">Bexalite</span>
+                    <span class="zone-ore">Laranite</span>
+                </div>
+                <p class="zone-note">The asteroid itself has ROC and FPS mining deposits on and inside its surface. Hadanite cave clusters are well-documented on Delamar. ROC runs here are a reliable aUEC earner while waiting for a Breaker Station contract to reset. The massive borehole through Delamar is a navigation landmark — use it to orient yourself.</p>
+            </div>
+
+            <div class="zone-card">
+                <h4>Abandoned QV Stations (Glaciem Ring)</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Rare Loot</span>
+                    <span class="zone-ore">Sadaryx Crystals</span>
+                    <span class="zone-ore">Bexalite (interior)</span>
+                </div>
+                <p class="zone-note">Multiple derelict QV service stations are scattered throughout the Glaciem Ring. Some are the basis for Breaker Station contracts. Others contain loot rooms, salvageable materials, and Sadaryx crystal deposits useful for Breaker Station lens fabrication. Worth scanning any derelict you find before leaving the belt.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Keeger Belt (Nyx Belt Beta)</h3>
+            <div class="zone-card">
+                <h4>Overview</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Quantanium</span>
+                    <span class="zone-ore">Bexalite</span>
+                    <span class="zone-ore">Taranite</span>
+                    <span class="zone-ore">Borase</span>
+                    <span class="zone-ore">Gold</span>
+                </div>
+                <p class="zone-note">The outer cold belt — more remote than the Glaciem Ring, lower rock density, but higher average quality scores per rock. Keeger suits endurance haul operations rather than fast-grab solo runs. Lore ties this belt to criminal strongholds and hidden bases — expect organised pirate activity, not just random interdiction. <strong>Do not run Keeger solo.</strong></p>
+            </div>
+
+            <div class="zone-card">
+                <h4>Keeger Quantanium Fields</h4>
+                <div class="zone-meta">
+                    <span class="zone-ore">Quantanium</span>
+                    <span class="zone-ore">Taranite</span>
+                </div>
+                <p class="zone-note">Confirmed Quantanium deposits in the deeper sections of the Keeger Belt. Lower competition than Lyria or Pyro III. Refine at Levski before jumping back — do not carry volatile Quant cargo through the Stanton jump point without refining first. 15-minute timer applies from first extraction.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Nyx Survival Rules for Jackals</h3>
+            <div class="stat-row"><span>🏠 Always base out of Levski — set your ship spawn on arrival</span><span class="badge badge-red">Non-negotiable</span></div>
+            <div class="stat-row"><span>🌫️ Nebula interference reduces scanner range — get closer to rocks before pinging</span><span class="badge badge-orange">Important</span></div>
+            <div class="stat-row"><span>🛡️ Glaciem solo is viable with a fast ship — Keeger always needs an escort</span><span class="badge badge-orange">Know your belt</span></div>
+            <div class="stat-row"><span>🔧 Restock Sadaryx crystals on Delamar for Breaker Station lens runs</span><span class="badge badge-blue">Best practice</span></div>
+            <div class="stat-row"><span>⏱️ Quantanium from Keeger: refine at Levski before jumping out</span><span class="badge badge-red">15 min timer</span></div>
+            <div class="stat-row"><span>🏴‍☠️ Vanduul presence reported in Nyx — stay alert in outer belt zones</span><span class="badge badge-red">4.4+ threat</span></div>
+            <div class="stat-row"><span>🎯 Breaker Station contracts: pick up at Levski Contract Manager → Ship Mining</span><span class="badge badge-green">Standard protocol</span></div>
+        </div>
+
+        <div class="card">
+            <h3>Nyx vs Pyro — When to Choose Which</h3>
+            <table>
+                <thead><tr><th>Factor</th><th>Nyx</th><th>Pyro</th></tr></thead>
+                <tbody>
+                    <tr><td>Refinery Hub</td><td>Levski (Delamar) — full services</td><td>Ruin Station / Pyro Gateway</td></tr>
+                    <tr><td>Rock Density</td><td>High (Glaciem) / Low (Keeger)</td><td>Medium — spread across planets</td></tr>
+                    <tr><td>Quantanium</td><td>Keeger Belt — lower competition</td><td>Pyro III — higher risk/reward</td></tr>
+                    <tr><td>Pirate Threat</td><td>Organised (Keeger) / Moderate (Glaciem)</td><td>Heavy — all zones</td></tr>
+                    <tr><td>Vanduul Risk</td><td>Present — 4.4+ patrols</td><td>Minimal currently</td></tr>
+                    <tr><td>Breaker Stations</td><td>✅ Yes — Glaciem Ring</td><td>❌ No</td></tr>
+                    <tr><td>Solo Viability</td><td>Glaciem only — fast and safe</td><td>Not recommended anywhere</td></tr>
+                    <tr><td>Best For</td><td>Breaker ops, solo Glaciem grabs, ROC runs on Delamar</td><td>Epic ore bulk ops, Pyro exclusives</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ECONOMY & PRICES -->
+    <section id="economy">
+        <h2>Economy &amp; Prices</h2>
+
+        <div class="card economy-alert">
+            <h4>⚠️ 4.7 Economy Shift — Read This First</h4>
+            <p>Raw vendor sales are no longer the primary profit loop. In 4.7, high-quality ore fed into the Fabricator Loop produces crafted gear worth significantly more than raw mineral vendor prices. The table below reflects current raw sale values — treat them as a floor, not a ceiling. A 900-score Bexalite batch refined and crafted into Tier-1 components is worth multiples of its raw vendor price.</p>
+        </div>
+
+        <div class="card">
+            <h3>Ore Price Reference <span style="color:#555; font-size:0.75rem; font-weight:normal;">(aUEC/unit — update manually as market shifts)</span></h3>
+            <div class="price-table-wrap">
+                <table>
+                    <thead><tr><th>Ore</th><th>Raw Sell</th><th>Refined Sell</th><th>Crafting Value</th><th>Last Updated</th></tr></thead>
+                    <tbody id="priceTableBody">
+                        <tr><td>Quantanium</td><td id="p-qnt-raw">~25</td><td id="p-qnt-ref">~80–120</td><td><span class="badge badge-red">Critical</span></td><td><span class="price-update" id="d-qnt">—</span></td></tr>
+                        <tr><td>Bexalite</td><td id="p-bex-raw">~12</td><td id="p-bex-ref">~40–65</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-bex">—</span></td></tr>
+                        <tr><td>Taranite</td><td id="p-tar-raw">~10</td><td id="p-tar-ref">~35–55</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-tar">—</span></td></tr>
+                        <tr><td>Gold</td><td id="p-gld-raw">~5</td><td id="p-gld-ref">~15–25</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-gld">—</span></td></tr>
+                        <tr><td>Laranite</td><td id="p-lar-raw">~4</td><td id="p-lar-ref">~12–20</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-lar">—</span></td></tr>
+                        <tr><td>Agricium</td><td id="p-agr-raw">~3</td><td id="p-agr-ref">~8–14</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-agr">—</span></td></tr>
+                        <tr><td>Titanium</td><td id="p-tit-raw">~1</td><td id="p-tit-ref">~3–6</td><td><span class="badge badge-orange">Filler</span></td><td><span class="price-update" id="d-tit">—</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="price-update" style="margin-top:10px;">Prices fluctuate with server economy. Cross-reference with <strong>UEX Corp (uexcorp.space)</strong> and <strong>Regolith.rocks</strong> for live data before a major run.</p>
+        </div>
+
+        <div class="card">
+            <h3>Update Prices Manually</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div>
+                    <label>Ore</label>
+                    <select id="updateOreSelect">
+                        <option value="qnt">Quantanium</option>
+                        <option value="bex">Bexalite</option>
+                        <option value="tar">Taranite</option>
+                        <option value="gld">Gold</option>
+                        <option value="lar">Laranite</option>
+                        <option value="agr">Agricium</option>
+                        <option value="tit">Titanium</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Raw Price (aUEC/unit)</label>
+                    <input type="number" id="updateRawPrice" placeholder="e.g. 27" />
+                </div>
+                <div>
+                    <label>Refined Price (aUEC/unit)</label>
+                    <input type="number" id="updateRefPrice" placeholder="e.g. 95" />
+                </div>
+                <div style="display:flex; align-items:flex-end;">
+                    <button onclick="updatePrice()" style="width:100%; margin-top:0;">Save Price</button>
+                </div>
+            </div>
+            <p id="updateConfirm" style="color:var(--success); font-size:0.85rem; margin-top:8px; display:none;">✓ Price updated.</p>
+        </div>
+
+        <div class="card">
+            <h3>Where to Sell Refined Ore</h3>
+            <table><thead><tr><th>Location</th><th>System</th><th>TDD / Terminal</th></tr></thead><tbody>
+                <tr><td>Lorville (Hurston)</td><td>Stanton</td><td>Lorville TDD — main hub, best liquidity</td></tr>
+                <tr><td>Area18 (ArcCorp)</td><td>Stanton</td><td>ArcCorp TDD — good for Gold, Laranite</td></tr>
+                <tr><td>New Babbage (MicroTech)</td><td>Stanton</td><td>New Babbage TDD — competitive Bexalite rates</td></tr>
+                <tr><td>Grim Hex (Yela)</td><td>Stanton</td><td>Outlaw station — no law, accepts all cargo</td></tr>
+                <tr><td>Ruin Station (Terminus)</td><td>Pyro</td><td>Pyro's primary trade hub — volatile prices, no security</td></tr>
+            </tbody></table>
+        </div>
+    </section>
+
+    <!-- BREAKER STATION GUIDE -->
+    <section id="breaker">
+        <h2>Breaker Station Guide</h2>
+
+        <div class="card">
+            <h3>What Is It?</h3>
+            <p>Operation Breaker Stations takes players to the Keeger Belt in Nyx, where Shubin's recently acquired QV Breaker stations sit abandoned and unpowered, their rock-cracking capabilities long dormant. These missions come in either an Exclusive PvE format or an open FFA PvP format. Pick up the contract at Nyx in the Contract Manager under Ship Mining.</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+                <div class="zone-card safe-card">
+                    <h4 style="color:var(--success)">🔒 Exclusive Contract</h4>
+                    <p class="zone-note">Private instance. Interior is secure from other players. Exterior landing area may still have PvP. Best for Org runs learning the layout.</p>
+                </div>
+                <div class="zone-card danger-card">
+                    <h4 style="color:var(--danger)">⚔️ Shared Contract</h4>
+                    <p class="zone-note">Up to 5 groups share the same station simultaneously. Expect hostile player contact anywhere on site. Higher risk, higher reward pressure. Bring a fighter escort.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Before You Deploy — Kit Check</h3>
+            <div class="stat-row"><span>🌡️ Temperature armour (Pembroke or Morozov set)</span><span class="badge badge-red">Required</span></div>
+            <div class="stat-row"><span>🔧 Multitool with Mining, Salvage <em>and</em> Tractor Beam attachments</span><span class="badge badge-red">Required</span></div>
+            <div class="stat-row"><span>💊 Stims, medpens, respawn-capable ship</span><span class="badge badge-red">Required</span></div>
+            <div class="stat-row"><span>🔫 Ripper SMG + extra ammo (enemies are numerous)</span><span class="badge badge-green">Recommended</span></div>
+            <div class="stat-row"><span>🏪 Buy gear at Levski before jumping to Nyx</span><span class="badge badge-blue">Best Practice</span></div>
+            <div class="stat-row"><span>📍 Set ship respawn at a nearby station before entering</span><span class="badge badge-blue">Best Practice</span></div>
+            <p class="phase-tip" style="margin-top:12px;">💡 Set personal waypoints as you explore. The facility is large and easy to get turned around in. Note refractor codes in the format <strong>A-1234</strong> as you find them.</p>
+        </div>
+
+        <div class="card">
+            <h3>Full Mission Walkthrough</h3>
+
+            <div class="phase-block">
+                <h4><span class="phase-num">PHASE 1</span> Land &amp; Breach</h4>
+                <p>With no hangar access, the only entry point is a landing pad next to the maintenance port. From there, suit up and make your way inside on foot, navigating icy caverns to locate the central power core.</p>
+                <ul>
+                    <li>Land behind the large rock at the ring's landing pads</li>
+                    <li>Enter airlock, use corner elevators to reach the Power Core level</li>
+                    <li>The Claw Salamanders — deep-space scavengers — and Valakkar in a new icy variant roam the caverns. Clear them before switching to your Multitool</li>
+                    <li>Break ice walls with your Mining Tool (full power), repair broken doors with your Salvage Tool</li>
+                </ul>
+            </div>
+
+            <div class="phase-block">
+                <h4><span class="phase-num">PHASE 2</span> Restore Power &amp; Collect Sadaryx</h4>
+                <p>Locate the derelict yellow mining robots in the Power Core area. Harvest their capacitors and install them at the central Power Core.</p>
+                <ul>
+                    <li>Restoring power activates CCTV consoles throughout the station — these hold the refractor codes</li>
+                    <li>While clearing this area, collect <strong>Sadaryx crystals</strong> from tunnels — they look like white geodes near blue Aphorite deposits</li>
+                    <li>You need at least 12 Sadaryx total — each lens takes 4, and you need 3 lenses. Grab extras for future runs</li>
+                    <li>Clear ice blockages in tunnels with your Mining Tool or grenades. Watch for fauna in the dark</li>
+                </ul>
+                <div class="phase-tip">⚡ Collect more than 12 Sadaryx. Having spares eliminates a major bottleneck on repeat runs.</div>
+            </div>
+
+            <div class="phase-block">
+                <h4><span class="phase-num">PHASE 3</span> Facility Reset &amp; Collect Refractor Codes</h4>
+                <p>Board the tram to the Operations facility. A full Facility Reset is <strong>mandatory</strong> — codes will not appear until it is triggered.</p>
+                <ul>
+                    <li>Enter the Operations room airlock, hit the reset button on the primary console</li>
+                    <li>Three randomised refractor codes (A, B, C) now appear at three locations:</li>
+                    <li>📍 <strong>Power Core</strong> — bridge below the capacitor turn-in</li>
+                    <li>📍 <strong>Operations</strong> — right of reset button by the server rack</li>
+                    <li>📍 <strong>Storage</strong> — inside the Storage sector (accessed later via Laser section tram)</li>
+                    <li>Write all codes down. Format: <strong>A-1234 / B-5678 / C-9012</strong></li>
+                </ul>
+            </div>
+
+            <div class="phase-block">
+                <h4><span class="phase-num">PHASE 4</span> Fabricate Lenses at the Laser Section</h4>
+                <p>The laser emitter is accessible by tram or by flying directly to it — it sits above the service station where you first landed.</p>
+                <ul>
+                    <li>Find the lens fabrication machine near the entrance (right side)</li>
+                    <li>Load 4 Sadaryx into the hopper slot → hit the button → fabricate one lens. Repeat 3 times</li>
+                    <li>Use your tractor beam to move each finished lens to the front of the emitter. Insert them into the armatures — numbers above each lens change from red to white when properly seated.</li>
+                    <li>If the machine bugs, use your Tractor Tool to pull materials back out and run it again</li>
+                    <li>Also collect the Storage sector trolley key and the Refractor A code here if not already found</li>
+                </ul>
+                <div class="phase-tip">🔧 Lens bay is up the stairs on the opposite side of the laser from the storage trolley. Easy to miss on first run.</div>
+            </div>
+
+            <div class="phase-block">
+                <h4><span class="phase-num">PHASE 5</span> Align Refractors A, B &amp; C</h4>
+                <p>Board the external tram. Navigate to Refractors A, B, and C via the tram navigation screen.</p>
+                <ul>
+                    <li>Each refractor has two terminals — enter the code on either side</li>
+                    <li>Screen turns green to confirm acceptance. If it throws an error, check the code again</li>
+                    <li>More lenses and mirrors aligned means a more powerful beam, deeper drilling, and access to rarer resources.</li>
+                </ul>
+            </div>
+
+            <div class="phase-block">
+                <h4><span class="phase-num">PHASE 6</span> Load Catalysts &amp; Fire the Laser</h4>
+                <p>Go to the laser control cab at the back of the emitter, up a set of stairs. The display shows power, lenses, refractors, and catalysts — the catalysts are missing.</p>
+                <ul>
+                    <li>Retrieve the lasing catalysts from the Storage depot (trolley ride from Phase 4)</li>
+                    <li>Return to the laser control cab, load all catalysts, confirm all four status lights are green</li>
+                    <li>Fire the laser. The asteroid cracks open</li>
+                </ul>
+            </div>
+
+            <div class="phase-block">
+                <h4><span class="phase-num">PHASE 7</span> Mine the Asteroid Interior</h4>
+                <p>Descend into the cracked rock and extract what's inside.</p>
+                <ul>
+                    <li>Interior contains rare material deposits including Stileron, Savrilium, and high-quality Sadaryx</li>
+                    <li>Haul extracted ore back to your ship using the tractor beam setup</li>
+                    <li>The blueprints you earn from completing the contract are exclusive to these platforms. Do not skip looting bodies and containers — keycards unlock loot rooms with premium rewards</li>
+                    <li>Use the proximity looting system (I key → box icon) to cycle containers fast</li>
+                </ul>
+                <div class="phase-tip">🏆 Rewards: Rare ore + exclusive Fabricator blueprints + aUEC payout. A clean full run can reach millions per session.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JACKAL ROLE ASSIGNMENTS -->
+    <section id="roles">
+        <h2>Jackal Role Assignments</h2>
+
+        <div class="card">
+            <p style="color:#aaa; margin:0 0 16px;">Every Jackal operation works best when roles are pre-assigned before departure. This applies to both Breaker Station runs and open-world mining ops. Call your role in comms before undocking.</p>
+            <div class="role-grid">
+                <div class="role-card role-fighter">
+                    <h4>⚔️ Fighter / Combat Escort</h4>
+                    <p><strong>Min crew:</strong> 1 per op, 2+ for Breaker / Pyro runs</p>
+                    <p><strong>Ships:</strong> Arrow, Gladius, Sabre, F7C Hornet</p>
+                    <ul>
+                        <li>Clear station hostiles before miners advance</li>
+                        <li>Intercept pirates during haul transit</li>
+                        <li>Hold perimeter in Shared Breaker contracts</li>
+                        <li>Call PvP threats in comms immediately</li>
+                        <li>Escort MOLE and Caterpillar hauls through Pyro</li>
+                    </ul>
+                </div>
+                <div class="role-card role-miner">
+                    <h4>⛏️ Miner</h4>
+                    <p><strong>Min crew:</strong> 1 solo (Prospector), 2–3 (MOLE)</p>
+                    <p><strong>Ships:</strong> MISC Prospector, Argo MOLE</p>
+                    <ul>
+                        <li>Scan and evaluate rocks — only extract 700+ quality</li>
+                        <li>Manage laser stability and module selection</li>
+                        <li>Call timer the moment Quantanium enters cargo</li>
+                        <li>In Breaker: collect Sadaryx + mine asteroid interior</li>
+                        <li>Report high-quality finds in Org comms for supply runs</li>
+                    </ul>
+                </div>
+                <div class="role-card role-crafter">
+                    <h4>🔧 Crafter / Fabricator Operator</h4>
+                    <p><strong>Min crew:</strong> 1 per Org shift</p>
+                    <p><strong>Ships:</strong> Any hauler with cargo for refined materials</p>
+                    <ul>
+                        <li>Accept refined material deliveries from haulers</li>
+                        <li>Manage blueprint inventory and crafting queue</li>
+                        <li>Prioritise 700–1000 quality inputs for Fabricator jobs</li>
+                        <li>In Breaker: fabricate the three laser lenses (Phase 4)</li>
+                        <li>Track crafted output — flag high-tier items for Org pilots</li>
+                    </ul>
+                </div>
+                <div class="role-card role-hauler">
+                    <h4>🚛 Hauler / Logistics</h4>
+                    <p><strong>Min crew:</strong> 1 per refinery run</p>
+                    <p><strong>Ships:</strong> Caterpillar, Hull C, Freelancer MAX, MPUV</p>
+                    <ul>
+                        <li>Transport refined ore boxes from refinery to Fabricator station</li>
+                        <li>Priority haul Quantanium cargo — 15-minute timer</li>
+                        <li>Coordinate with miners on cargo volume before departure</li>
+                        <li>In Breaker: haul extracted asteroid ore to ship hold</li>
+                        <li>Report pirate interdiction attempts in comms</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Recommended Crew Sizes by Op Type</h3>
+            <table>
+                <thead><tr><th>Operation</th><th>Min Crew</th><th>Ideal Crew</th><th>Roles Required</th></tr></thead>
+                <tbody>
+                    <tr><td>Solo Prospector Run (Stanton)</td><td>1</td><td>1</td><td>Miner</td></tr>
+                    <tr><td>MOLE Belt Run (Stanton)</td><td>2</td><td>3</td><td>Miner × 2–3</td></tr>
+                    <tr><td>Quantanium Lyria Run</td><td>2</td><td>3</td><td>Miner + Fighter + Hauler</td></tr>
+                    <tr><td>Breaker Station (Exclusive)</td><td>2</td><td>4</td><td>Fighter + Miner + Crafter + Hauler</td></tr>
+                    <tr><td>Breaker Station (Shared/PvP)</td><td>4</td><td>6+</td><td>2× Fighter + Miner + Crafter + Hauler + Spare</td></tr>
+                    <tr><td>Pyro III Quantanium Op</td><td>4</td><td>6+</td><td>2× Fighter + 2× Miner + Hauler + Crafter</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>Comms Protocol</h3>
+            <div class="stat-row"><span>📡 Pre-flight role call in voice before undocking</span><span class="badge badge-red">Mandatory</span></div>
+            <div class="stat-row"><span>⏱️ Miner calls "QUANT IN CARGO" + starts Stability Timer on extraction</span><span class="badge badge-red">Mandatory</span></div>
+            <div class="stat-row"><span>🏴‍☠️ Fighter calls pirate contact + ship type immediately</span><span class="badge badge-red">Mandatory</span></div>
+            <div class="stat-row"><span>📦 Hauler confirms cargo manifest before departing refinery</span><span class="badge badge-blue">Standard</span></div>
+            <div class="stat-row"><span>🔒 Share Breaker contract code in org chat, not public</span><span class="badge badge-blue">Standard</span></div>
+        </div>
+    </section>
+
+    <!-- ROCK EVALUATION CHECKLIST -->
+    <section id="rockeval">
+        <h2>Rock Evaluation Checklist</h2>
+
+        <div class="card">
+            <p style="color:#aaa; margin:0 0 16px;">Use this checklist when scanning a rock to make a fast, consistent go/no-go decision. Tick each check as you scan. Reset between rocks.</p>
+
+            <div id="checklist-container">
+                <div class="checklist-item">
+                    <div class="check-box" onclick="toggleCheck(this)"></div>
+                    <div class="check-label"><strong>Primary ore identified?</strong> <span class="check-tag tag-skip">SKIP if unknown</span><br>Get within 200m and ping again if composition is still unresolved. Don't crack blind.</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box" onclick="toggleCheck(this)"></div>
+                    <div class="check-label"><strong>Primary quality score ≥ 700?</strong> <span class="check-tag tag-go">GO</span> <span class="check-tag tag-skip">SKIP if &lt; 300</span><br>300–699 is vendor-only. 700+ feeds the Fabricator Loop. 900+ is a priority flag for Org supply runs.</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box" onclick="toggleCheck(this)"></div>
+                    <div class="check-label"><strong>Check sub-materials (up to 2 in 4.7)</strong> <span class="check-tag tag-maybe">SITUATIONAL</span><br>Even if primary is low, a 700+ sub-material may be worth the extraction if cargo space allows.</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box" onclick="toggleCheck(this)"></div>
+                    <div class="check-label"><strong>Resistance level acceptable?</strong> <span class="check-tag tag-maybe">CHECK LOADOUT</span><br>High resistance on a low-value rock is a time sink. Only worth it if quality score justifies the extra module swap.</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box" onclick="toggleCheck(this)"></div>
+                    <div class="check-label"><strong>Is it Quantanium?</strong> <span class="check-tag tag-go">START TIMER</span><br>If yes — announce in comms, start the Stability Timer now, and plot fastest route to refinery before cracking.</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box" onclick="toggleCheck(this)"></div>
+                    <div class="check-label"><strong>Cargo space available?</strong> <span class="check-tag tag-maybe">CHECK FILL %</span><br>If cargo is over 80% full, only extract if quality is 900+. Otherwise head to refinery first.</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box" onclick="toggleCheck(this)"></div>
+                    <div class="check-label"><strong>Area secure? (Pyro / Shared Breaker)</strong> <span class="check-tag tag-skip">ABORT if threat active</span><br>Don't crack a high-value rock while under fire or with a pirate on scanner. Reposition first.</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box" onclick="toggleCheck(this)"></div>
+                    <div class="check-label"><strong>Instability manageable with current modules?</strong> <span class="check-tag tag-maybe">CHECK LOADOUT</span><br>If instability is high and you don't have Rime or Surge equipped, consider skipping volatile rocks in the current run.</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box" onclick="toggleCheck(this)"></div>
+                    <div class="check-label"><strong>Final call: Extract?</strong> <span class="check-tag tag-go">CRACK IT</span> <span class="check-tag tag-skip">MOVE ON</span><br>If 5+ boxes above are checked — extract. If fewer than 3 — skip and keep scanning. Time is money in Nyx.</div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+                <button class="checklist-reset" onclick="resetChecklist()">↺ Reset Checklist</button>
+                <span id="check-count" style="color:#555; font-size:0.82rem;">0 / 9 checked</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Quick Reference: Go / No-Go Matrix</h3>
+            <table>
+                <thead><tr><th>Scenario</th><th>Decision</th></tr></thead>
+                <tbody>
+                    <tr><td>Primary 700+, any ore</td><td><span class="badge badge-green">Extract</span></td></tr>
+                    <tr><td>Primary 300–699, cargo under 50%</td><td><span class="badge badge-blue">Extract (vendor only)</span></td></tr>
+                    <tr><td>Primary &lt; 300, sub-material 700+</td><td><span class="badge badge-orange">Extract if time allows</span></td></tr>
+                    <tr><td>All scores &lt; 300</td><td><span class="badge badge-red">Skip — move on</span></td></tr>
+                    <tr><td>Quantanium any quality</td><td><span class="badge badge-green">Extract + start timer</span></td></tr>
+                    <tr><td>Cargo &gt; 80% full, quality &lt; 900</td><td><span class="badge badge-red">Refinery run first</span></td></tr>
+                    <tr><td>High resistance + quality &lt; 600</td><td><span class="badge badge-red">Skip — not worth time</span></td></tr>
+                    <tr><td>Area under threat (Pyro / PvP)</td><td><span class="badge badge-red">Reposition first</span></td></tr>
+                    <tr><td>900+ quality, any ore</td><td><span class="badge badge-red">Flag for Org supply run</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- LASERS DEEP DIVE -->
+    <section id="lasers">
+        <h2>Mining Lasers Deep Dive</h2>
+        <div class="card">
+            <p style="color:#aaa; margin:0 0 4px;">All ship mining lasers fall into two sizes. Size 1 fits the Prospector. Size 2 fits the MOLE (three arms). Choosing the right laser for the job changes how every rock feels to crack.</p>
+        </div>
+
+        <div class="card">
+            <h3>📦 Size 1 Lasers — Prospector</h3>
+
+            <div class="laser-card">
+                <h4>Arbor MH1 — Greycat Industrial</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 1</span>
+                    <span class="laser-stat ls-safe">Safe / Balanced</span>
+                    <span class="laser-stat ls-slots">2 Module Slots</span>
+                </div>
+                <p>The standard laser on most ships by default. Solid, reliable, and forgiving. Filters out inert material, reducing junk in your cargo. Good balance of speed and safety. Best entry-level laser for new Jackals.</p>
+                <p class="jackal-rec">Jackal Use: Default loadout for training runs and general Stanton ops.</p>
+            </div>
+
+            <div class="laser-card">
+                <h4>Hofstede S1 — Shubin Interstellar</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 1</span>
+                    <span class="laser-stat ls-safe">Low Instability</span>
+                    <span class="laser-stat ls-slots">2 Module Slots</span>
+                </div>
+                <p>Dampens resistance while mining and collects less inert material. Short-to-medium range only. Higher instability than the Arbor — requires active management — but the resistance reduction is excellent for dense deposits. Best for high-value quality runs where you want clean extractions.</p>
+                <p class="jackal-rec">Jackal Use: Primary recommendation for Bexalite and Taranite quality farming.</p>
+            </div>
+
+            <div class="laser-card">
+                <h4>Impact I — Thermyte Concern</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 1</span>
+                    <span class="laser-stat ls-power">High Power</span>
+                    <span class="laser-stat ls-slots">2 Module Slots</span>
+                </div>
+                <p>Increased power with a wider optimal charge window. Deposits overheat faster and explode harder if you lose control. The improved optimal window makes it more forgiving for intermediate miners who can manage the heat. Good for resistant rocks where the Arbor stalls.</p>
+                <p class="jackal-rec">Jackal Use: Resistant rock specialist. Pair with Rime module on volatile ores.</p>
+            </div>
+
+            <div class="laser-card">
+                <h4>Helix I — Thermyte Concern</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 1</span>
+                    <span class="laser-stat ls-power">Very High Power</span>
+                    <span class="laser-stat ls-slots">3 Module Slots</span>
+                </div>
+                <p>The most powerful size-1 laser. Three module slots — the most of any size-1 head — makes it extremely customisable. Throttle responsiveness is slower, so overshoots happen fast. Explosions hit significantly harder when they do occur. A sign of a skilled Jackal miner when used correctly.</p>
+                <p class="jackal-rec">Jackal Use: Expert-level. Best for Quantanium and high-resistance epic ores with Rime + Surge + Brandt combo.</p>
+            </div>
+
+            <div class="laser-card">
+                <h4>Lancet MH1 — Greycat Industrial</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 1</span>
+                    <span class="laser-stat ls-safe">Support / Low Power</span>
+                    <span class="laser-stat ls-slots">2 Module Slots</span>
+                </div>
+                <p>Support laser designed for multi-ship ops. Generates a weak beam that safely reduces instability and resistance but cannot crack a rock solo. Pairs with a second Prospector or runs alongside a MOLE arm. Ideal when one operator controls stability while another drives the fracture.</p>
+                <p class="jackal-rec">Jackal Use: Support role in 2-Prospector ops or as a stability controller in dual-laser runs.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📦 Size 2 Lasers — MOLE</h3>
+
+            <div class="laser-card">
+                <h4>Arbor MH2 — Greycat Industrial</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 2</span>
+                    <span class="laser-stat ls-safe">Safe / Balanced</span>
+                    <span class="laser-stat ls-slots">2 Module Slots</span>
+                </div>
+                <p>The size-2 version of the reliable Arbor line. Same inert material filtration and balanced approach as the MH1. Good default for the MOLE when a crew is learning the ropes or doing lower-risk ore runs.</p>
+                <p class="jackal-rec">Jackal Use: MOLE default and training arm. Reliable on Gold and Laranite runs.</p>
+            </div>
+
+            <div class="laser-card">
+                <h4>Hofstede S2 — Shubin Interstellar</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 2</span>
+                    <span class="laser-stat ls-safe">Safety Focused</span>
+                    <span class="laser-stat ls-slots">2 Module Slots</span>
+                </div>
+                <p>The size-2 safety laser. Dampens instability to dramatically reduce explosion risk. Sacrifices range. The go-to choice for any MOLE arm running Quantanium where one accidental explosion can wipe the whole team.</p>
+                <p class="jackal-rec">Jackal Use: Mandatory on Quant MOLE runs. At least one arm should always run an S2 on volatile ops.</p>
+            </div>
+
+            <div class="laser-card">
+                <h4>Helix II / III — Thermyte Concern</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 2</span>
+                    <span class="laser-stat ls-power">Very High Power</span>
+                    <span class="laser-stat ls-slots">2–3 Module Slots</span>
+                </div>
+                <p>Size-2 versions of the powerful Helix line. Impressive power and range for hard rock fracture. Throttle lag and increased explosion force means operators need experience. The Helix III adds a third slot for more configuration. Best results on Bexalite, Taranite and asteroid belt rocks.</p>
+                <p class="jackal-rec">Jackal Use: MOLE primary arm. Helix III is the top-tier MOLE laser for serious belt runs.</p>
+            </div>
+
+            <div class="laser-card">
+                <h4>Impact II — Thermyte Concern</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 2</span>
+                    <span class="laser-stat ls-power">High Power</span>
+                    <span class="laser-stat ls-slots">3 Module Slots</span>
+                </div>
+                <p>High power with a wider optimal window and three module slots. Increases deposit resistance as a tradeoff. Slower charge window fill. The three slots give flexibility to counter the resistance penalty. Good versatile MOLE arm that doesn't require expert-level throttle control.</p>
+                <p class="jackal-rec">Jackal Use: Versatile MOLE arm for mixed-ore runs. Impact II + Brandt + Focus + Surge is a strong all-rounder combo.</p>
+            </div>
+
+            <div class="laser-card">
+                <h4>Klein S2 — Shubin Interstellar</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 2</span>
+                    <span class="laser-stat ls-power">Fast / Aggressive</span>
+                    <span class="laser-stat ls-slots">2 Module Slots</span>
+                </div>
+                <p>Speed-focused size-2 laser. Mines fast but boosts instability and explosion risk as a result. For careful operators who want to maximise runs-per-hour on lower-resistance ores. Not recommended for Quantanium or high-instability rocks.</p>
+                <p class="jackal-rec">Jackal Use: Speed run arm for common ore quality-farming. Swap out before Quant ops.</p>
+            </div>
+
+            <div class="laser-card">
+                <h4>Lancet MH2 — Greycat Industrial</h4>
+                <div class="laser-meta">
+                    <span class="laser-stat ls-size">Size 2</span>
+                    <span class="laser-stat ls-safe">Support Only</span>
+                    <span class="laser-stat ls-slots">2 Module Slots</span>
+                </div>
+                <p>Size-2 support laser for multi-crew MOLE operations. Reduces instability and resistance on a rock while the power arms fracture it. Assign your least experienced crew member to this arm — it's nearly impossible to blow a rock with it alone.</p>
+                <p class="jackal-rec">Jackal Use: Dedicated stability arm on MOLE. Assign to support role in 3-person crews on volatile rocks.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODULES REFERENCE -->
+    <section id="modules">
+        <h2>Modules Reference</h2>
+        <div class="card">
+            <p style="color:#aaa; margin:0 0 14px;">Modules slot into laser heads and change how they behave. <span class="mod-type-passive">PASSIVE</span> modules are always active. <span class="mod-type-active">ACTIVE</span> modules have limited charges and are triggered manually. Stacking the same module in multiple slots does stack the effect.</p>
+
+            <h3 style="margin-top:0;">Passive Modules</h3>
+            <div class="mod-row" style="font-weight:bold; color:var(--jackal-gold); font-size:0.78rem; border-bottom:1px solid #333;">
+                <span>Module</span><span>Effect</span><span>Type</span>
+            </div>
+
+            <div class="mod-row"><span class="mod-name">Rime</span><span class="mod-desc">Significantly reduces instability. The single most important safety module. Essential for Quantanium and Pyro ops.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Surge</span><span class="mod-desc">Increases power output. Helps crack resistant rocks faster. Pairs well with Rime to counteract the power trade-off.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Brandt</span><span class="mod-desc">Reduces resistance. Makes hard rocks easier to crack. Slight instability penalty. Core module for Bexalite/Taranite runs.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Focus</span><span class="mod-desc">Reduces resistance but increases instability. More aggressive than Brandt — better on medium-instability rocks.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Focus II / III</span><span class="mod-desc">Upgraded Focus variants. Focus II creates a wider optimal charge window at the cost of power. Focus III adds resistance reduction but more instability.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Torrent / II / III</span><span class="mod-desc">Accelerates charge rate — fills the power bar faster. Requires steady hands to stay in the green zone. Torrent III is the most aggressive. Speed run module.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Rieger / C2 / C3</span><span class="mod-desc">Boosts laser power significantly but narrows the effective mining area. Requires precision to stay in optimal window. High risk, high output.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Lifti</span><span class="mod-desc">Increases extraction speed — pulls ore fragments into cargo faster after fracture. No effect on fracturing itself.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Vaux / C2</span><span class="mod-desc">Reduces charge rate (slower power build) but makes ore extraction faster. Prioritises clean collection over fast fracturing.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Torpid</span><span class="mod-desc">Slows down charge rate significantly. Used to give more reaction time on volatile rocks. Safety-first module for new miners.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Optimum</span><span class="mod-desc">Widens the optimal charge window. More forgiving to stay in the green. Great for beginners or high-instability situations.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">FLTR / L / XL</span><span class="mod-desc">Reduces inert material intake (junk ore). Keeps cargo cleaner. FLTR-L reduces by ~15%, FLTR-XL by more. Slows extraction rate as a tradeoff.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Forel</span><span class="mod-desc">Increases the range of the mining laser. Useful for asteroid belt ops where keeping distance is important.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Stampede</span><span class="mod-desc">Significantly increases power output. High risk — instability spikes dramatically. Experts only. Fastest cracker for very resistant rocks.</span><span class="mod-type-passive">PASSIVE</span></div>
+            <div class="mod-row"><span class="mod-name">Lifeline</span><span class="mod-desc">Widens the safe extraction zone after fracture. Reduces chance of explosion when collecting fragments. Good pair with Torrent.</span><span class="mod-type-passive">PASSIVE</span></div>
+
+            <h3>Active Modules</h3>
+            <div class="mod-row"><span class="mod-name">Forel (Active)</span><span class="mod-desc">Temporarily extends laser range with a burst. Limited charges. Useful for reaching rocks in awkward positions.</span><span class="mod-type-active">ACTIVE</span></div>
+        </div>
+
+        <div class="card">
+            <h3>Jackal Recommended Combos</h3>
+            <table>
+                <thead><tr><th>Situation</th><th>Laser</th><th>Module Combo</th></tr></thead>
+                <tbody>
+                    <tr><td>Solo Quant (Prospector)</td><td>Hofstede S1</td><td>Rime + Surge</td></tr>
+                    <tr><td>Solo Hard Rock (Prospector)</td><td>Helix I</td><td>Brandt + Surge + Rime</td></tr>
+                    <tr><td>Solo Speed Run</td><td>Impact I</td><td>Torrent II + Surge</td></tr>
+                    <tr><td>Solo Beginner / Safe</td><td>Arbor MH1</td><td>Optimum + Torpid</td></tr>
+                    <tr><td>MOLE — Quant Arm</td><td>Hofstede S2</td><td>Rime + Surge</td></tr>
+                    <tr><td>MOLE — Power Arm</td><td>Helix III</td><td>Brandt + Surge + Torrent II</td></tr>
+                    <tr><td>MOLE — Support Arm</td><td>Lancet MH2</td><td>Rime + Optimum</td></tr>
+                    <tr><td>MOLE — Mixed Ore</td><td>Impact II</td><td>Focus II + Surge + Brandt</td></tr>
+                    <tr><td>Pyro III Quant (MOLE)</td><td>Hofstede S2 × 2 + Lancet MH2</td><td>Rime + Rime / Rime + Optimum</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- GADGETS -->
+    <section id="gadgets">
+        <h2>Mining Gadgets</h2>
+        <div class="card">
+            <p style="color:#aaa; margin:0 0 16px;">Gadgets are single-use consumables deployed directly onto a rock before or during fracturing. They can dramatically alter rock behaviour. <strong style="color:var(--danger);">Critical rule: never use more than one gadget per rock. Two gadgets on the same deposit causes a guaranteed catastrophic explosion.</strong></p>
+
+            <div class="gadget-card">
+                <div class="gadget-icon">💣</div>
+                <div class="gadget-body">
+                    <h4>Sabir — Resistance Breaker</h4>
+                    <p>Uses a sensor to modulate power and adjust it to the specific deposit. Dramatically drops resistance and widens the optimal charge window — makes hard rocks significantly easier to crack. Increases instability as a tradeoff.</p>
+                    <p><strong>Best for:</strong> Highly resistant rocks (Bexalite, Taranite, high-resistance Quant)</p>
+                    <p class="gadget-warn">⚠️ Only one gadget per rock. Never combine with BoreMax.</p>
+                </div>
+            </div>
+
+            <div class="gadget-card">
+                <div class="gadget-icon">🔵</div>
+                <div class="gadget-body">
+                    <h4>BoreMax — Instability Reducer</h4>
+                    <p>Focuses laser power to significantly reduce instability while keeping deposit clusters together on shattering (better fragmentation = better yield). Makes bypassing resistance slower and more difficult. Most miners find the safety and yield improvement worth the trade.</p>
+                    <p><strong>Best for:</strong> Volatile ores (Quantanium), high-instability rocks, inexperienced crews</p>
+                    <p class="gadget-warn">⚠️ Only one gadget per rock. Never combine with Sabir.</p>
+                </div>
+            </div>
+
+            <div class="gadget-card">
+                <div class="gadget-icon">⚡</div>
+                <div class="gadget-body">
+                    <h4>Stalwart — Power Precision</h4>
+                    <p>Designed for miners who want to wield high power precisely. Helps experienced operators hit and hold the optimal window on very powerful lasers like the Helix. Narrow operating window — not recommended for beginners.</p>
+                    <p><strong>Best for:</strong> Expert operators running Helix + Surge + Rieger combos on hard rocks.</p>
+                    <p class="gadget-warn">⚠️ Only one gadget per rock.</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:16px; background:#0a0c10; border-color: var(--danger);">
+                <h3 style="color:var(--danger); margin-top:0;">⛔ The One Gadget Rule</h3>
+                <p>This is not a suggestion. Using two gadgets on the same deposit triggers an immediate, unavoidable explosion regardless of where the power bar is. The explosion will destroy your cargo, damage or destroy your ship, and kill your crew. There are no exceptions. One gadget maximum per rock, per crack attempt.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOADOUT BUILDER (UPGRADED) -->
+    <section id="builder">
+        <h2>Loadout Builder</h2>
+        <div class="card">
+            <div class="loadout-section-label">1. Select Vessel</div>
+            <select id="shipSelect">
+                <option value="prospector_safe">Prospector — Safe / Beginner</option>
+                <option value="prospector_quant">Prospector — Quantanium Specialist</option>
+                <option value="prospector_hard">Prospector — Hard Rock / Resistant</option>
+                <option value="prospector_speed">Prospector — Speed Run</option>
+                <option value="mole_quant">MOLE — Quantanium Op</option>
+                <option value="mole_belt">MOLE — Belt Mining / Epic Ores</option>
+                <option value="mole_mixed">MOLE — Mixed Ore / General</option>
+            </select>
+
+            <button onclick="updateLoadout()">Generate Loadout</button>
+
+            <div id="loadoutOutput" style="margin-top:20px; display:none;">
+                <div class="loadout-section-label">Ship</div>
+                <h3 id="outShipName" style="color:var(--accent-blue); margin:4px 0 12px;"></h3>
+
+                <div class="loadout-section-label">Laser Head(s)</div>
+                <p id="outLaser" style="margin:4px 0 12px;"></p>
+
+                <div class="loadout-section-label">Modules</div>
+                <p id="outModules" style="margin:4px 0 12px;"></p>
+
+                <div class="loadout-section-label">Gadget</div>
+                <p id="outGadget" style="margin:4px 0 12px; color:#aaa;"></p>
+
+                <div class="loadout-section-label">Role</div>
+                <p id="outRole" style="margin:4px 0 6px;"></p>
+
+                <div class="loadout-section-label">Notes</div>
+                <p id="outNotes" style="color:#aaa; font-style:italic; margin:4px 0;"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROFIT CALCULATOR (UPGRADED) -->
+    <section id="calc">
+        <h2>Profit Calculator</h2>
+        <div class="card">
+            <label>Ore Type</label>
+            <select id="calcOre">
+                <option value="25">Quantanium (~25 aUEC/unit)</option>
+                <option value="12">Bexalite (~12 aUEC/unit)</option>
+                <option value="10">Taranite (~10 aUEC/unit)</option>
+                <option value="5">Gold (~5 aUEC/unit)</option>
+                <option value="4">Laranite (~4 aUEC/unit)</option>
+                <option value="3">Agricium (~3 aUEC/unit)</option>
+                <option value="1">Titanium / Common (~1 aUEC/unit)</option>
+            </select>
+
+            <label>Cargo (SCU)</label>
+            <input type="number" id="calcSCU" placeholder="e.g. 32" min="1" />
+
+            <label>Refinery Cut % (typically 20–35%)</label>
+            <input type="number" id="calcCut" placeholder="e.g. 25" min="0" max="100" value="25" />
+
+            <label>Quality Score Multiplier — <span style="color:var(--jackal-gold);">higher quality = better refinery yield</span></label>
+            <div class="calc-quality-row">
+                <span style="color:#aaa; font-size:0.82rem;">300</span>
+                <input type="range" id="calcQuality" min="300" max="1000" value="700" oninput="document.getElementById('qualityDisplay').textContent=this.value" />
+                <span style="color:#aaa; font-size:0.82rem;">1000</span>
+                <span class="quality-val" id="qualityDisplay">700</span>
+            </div>
+
+            <button onclick="calcProfit()">Calculate Profit</button>
+
+            <div class="result-box" id="calcResult" style="display:none;">
+                <p style="color:#aaa; margin:0 0 4px;">Estimated Net Profit</p>
+                <div class="big-number" id="calcOutput">-</div>
+                <p id="calcBreakdown" style="color:#666; font-size:0.85rem; margin-top:8px;"></p>
+                <p id="calcQualityNote" style="color:var(--jackal-gold); font-size:0.8rem; margin-top:6px;"></p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    // ── TAB NAVIGATION ──────────────────────────────────────────
+    function showSection(id, clickedEl) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        if (clickedEl) clickedEl.classList.add('active');
+        closeNav(); // auto-close drawer on mobile after selection
+    }
+
+    // ── MOBILE NAV ───────────────────────────────────────────────
+    function toggleNav() {
+        const nav = document.getElementById('sidebar');
+        const overlay = document.getElementById('nav-overlay');
+        const isOpen = nav.classList.contains('open');
+        if (isOpen) { closeNav(); } else {
+            nav.classList.add('open');
+            overlay.classList.add('visible');
+            document.getElementById('hamburger').textContent = '✕';
+        }
+    }
+
+    function closeNav() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('nav-overlay').classList.remove('visible');
+        document.getElementById('hamburger').textContent = '☰';
+    }
+
+    // ── LOADOUT BUILDER (UPGRADED) ───────────────────────────────
+    const loadouts = {
+        prospector_safe: {
+            name: 'MISC Prospector — Safe / Beginner',
+            laser: 'Arbor MH1',
+            modules: ['Optimum', 'Torpid'],
+            gadget: 'BoreMax (on unstable rocks)',
+            role: 'Training / Low-Risk Stanton Runs',
+            notes: 'Widened optimal window + slow charge rate. Very forgiving. Good for learning laser control on Gold and Laranite deposits.'
+        },
+        prospector_quant: {
+            name: 'MISC Prospector — Quantanium Specialist',
+            laser: 'Hofstede S1',
+            modules: ['Rime', 'Surge'],
+            gadget: 'BoreMax (deploy before cracking)',
+            role: 'Quantanium / Volatile Ore Solo',
+            notes: 'Rime kills instability spikes. Surge compensates power. BoreMax on the rock before firing. Start Stability Timer the moment first fragment enters cargo.'
+        },
+        prospector_hard: {
+            name: 'MISC Prospector — Hard Rock / Resistant',
+            laser: 'Helix I',
+            modules: ['Brandt', 'Surge', 'Rime'],
+            gadget: 'Sabir (on max-resistance rocks)',
+            role: 'Resistant Rock Specialist',
+            notes: 'Brandt + Surge drives through high resistance. Rime keeps it from going critical. Sabir only on rocks that would otherwise take 3+ minutes to crack. Expert throttle control required.'
+        },
+        prospector_speed: {
+            name: 'MISC Prospector — Speed Run',
+            laser: 'Impact I',
+            modules: ['Torrent II', 'Surge'],
+            gadget: 'None — speed runs avoid gadget setup time',
+            role: 'Quality Farming / Common Ore Speed Runs',
+            notes: 'Fast charge rate fills the window quickly. Best for 700+ quality Titanium/Laranite farming where you want max rocks per hour. Avoid on volatile ores.'
+        },
+        mole_quant: {
+            name: 'Argo MOLE — Quantanium Op',
+            laser: 'Arm 1: Hofstede S2 | Arm 2: Hofstede S2 | Arm 3: Lancet MH2',
+            modules: ['Arm 1: Rime + Surge | Arm 2: Rime + Surge | Arm 3: Rime + Optimum'],
+            gadget: 'BoreMax — one per rock, deployed before Arm 1 fires',
+            role: 'Multi-Crew Quantanium Extraction',
+            notes: 'Two S2 power arms with full Rime coverage. Lancet MH2 on Arm 3 as dedicated stability control. Never use Helix on Quant MOLE runs. Escort mandatory.'
+        },
+        mole_belt: {
+            name: 'Argo MOLE — Belt Mining / Epic Ores',
+            laser: 'Arm 1: Helix III | Arm 2: Helix III | Arm 3: Lancet MH2',
+            modules: ['Arm 1: Brandt + Surge + Torrent II | Arm 2: Brandt + Surge + Rime | Arm 3: Rime + Optimum'],
+            gadget: 'Sabir on max-resistance rocks (one per rock)',
+            role: 'Bexalite / Taranite Belt Runs',
+            notes: 'Full power configuration for epic ore asteroid belts. Arm 3 provides stability insurance. HUR-L3 and Akiro Cluster are primary targets. Pirate escort recommended.'
+        },
+        mole_mixed: {
+            name: 'Argo MOLE — Mixed Ore / General',
+            laser: 'Arm 1: Impact II | Arm 2: Arbor MH2 | Arm 3: Lancet MH2',
+            modules: ['Arm 1: Focus II + Surge + Brandt | Arm 2: Optimum + Torrent | Arm 3: Rime + Optimum'],
+            gadget: 'BoreMax or Sabir depending on rock type',
+            role: 'General Purpose / Training Crew',
+            notes: 'Versatile configuration for mixed ore runs. Impact II handles tough rocks, Arbor is the reliable workhorse, Lancet manages stability. Good for new crew learning MOLE coordination.'
+        }
+    };
+
+    function updateLoadout() {
+        const ship = document.getElementById('shipSelect').value;
+        const data = loadouts[ship];
+        document.getElementById('outShipName').textContent = data.name;
+        document.getElementById('outLaser').innerHTML = data.laser.split('|').map(l => `<span class="part-tag">${l.trim()}</span>`).join(' ');
+        const modSpan = document.getElementById('outModules');
+        modSpan.innerHTML = data.modules.map(m => `<span class="part-tag" style="color:var(--success); border-color:var(--success);">${m}</span>`).join(' ');
+        document.getElementById('outGadget').innerHTML = `<span class="part-tag" style="color:var(--jackal-orange); border-color:var(--jackal-orange);">${data.gadget}</span>`;
+        document.getElementById('outRole').textContent = data.role;
+        document.getElementById('outNotes').textContent = data.notes;
+        document.getElementById('loadoutOutput').style.display = 'block';
+    }
+
+    // ── PROFIT CALCULATOR (UPGRADED WITH QUALITY MULTIPLIER) ─────
+    function calcProfit() {
+        const pricePerUnit = parseFloat(document.getElementById('calcOre').value);
+        const scu = parseFloat(document.getElementById('calcSCU').value);
+        const cut = parseFloat(document.getElementById('calcCut').value) / 100;
+        const quality = parseInt(document.getElementById('calcQuality').value);
+
+        if (!scu || scu <= 0) { alert('Enter a valid SCU amount.'); return; }
+
+        // Quality multiplier: 300 = 0.8x yield, 700 = 1.0x, 1000 = 1.25x
+        const qualityMultiplier = 0.8 + ((quality - 300) / 700) * 0.45;
+
+        const unitsPerSCU = 100;
+        const gross = scu * unitsPerSCU * pricePerUnit * qualityMultiplier;
+        const refCost = gross * cut;
+        const net = Math.round(gross - refCost);
+
+        document.getElementById('calcOutput').textContent = net.toLocaleString() + ' aUEC';
+        document.getElementById('calcBreakdown').textContent =
+            `Gross: ${Math.round(gross).toLocaleString()} aUEC  |  Refinery cut (${(cut*100).toFixed(0)}%): −${Math.round(refCost).toLocaleString()} aUEC`;
+
+        let qNote = '';
+        if (quality >= 900) qNote = '🏆 Elite quality — flag this batch for Org Fabricator priority use.';
+        else if (quality >= 700) qNote = '✅ Priority quality — feeds the Fabricator Loop at full efficiency.';
+        else if (quality >= 300) qNote = '⚠️ Low quality — vendor sale only. Not suitable for Fabricator input.';
+        document.getElementById('calcQualityNote').textContent = qNote;
+        document.getElementById('calcResult').style.display = 'block';
+    }
+
+    // ── ROCK EVAL CHECKLIST ──────────────────────────────────────
+    function toggleCheck(el) {
+        el.classList.toggle('checked');
+        el.textContent = el.classList.contains('checked') ? '✓' : '';
+        updateCheckCount();
+    }
+
+    function updateCheckCount() {
+        const total = document.querySelectorAll('.check-box').length;
+        const checked = document.querySelectorAll('.check-box.checked').length;
+        document.getElementById('check-count').textContent = `${checked} / ${total} checked`;
+    }
+
+    function resetChecklist() {
+        document.querySelectorAll('.check-box').forEach(b => {
+            b.classList.remove('checked');
+            b.textContent = '';
+        });
+        updateCheckCount();
+    }
+
+    // ── MINERAL DB TAB SWITCHER ──────────────────────────────────
+    function switchMineralTab(clickedTab, panelId) {
+        const card = clickedTab.closest('.card');
+        card.querySelectorAll('.mineral-tab').forEach(t => t.classList.remove('active'));
+        card.querySelectorAll('.mineral-panel').forEach(p => p.classList.remove('active'));
+        clickedTab.classList.add('active');
+        document.getElementById(panelId).classList.add('active');
+    }
+
+    // ── SYSTEM TAB SWITCHER (Refineries) ────────────────────────
+    function switchSysTabs(clickedTab, panelId) {
+        const card = clickedTab.closest('.card');
+        card.querySelectorAll('.sys-tab').forEach(t => t.classList.remove('active'));
+        card.querySelectorAll('.sys-panel').forEach(p => p.classList.remove('active'));
+        clickedTab.classList.add('active');
+        document.getElementById(panelId).classList.add('active');
+    }
+
+    // ── MANUAL PRICE UPDATER ─────────────────────────────────────
+    function updatePrice() {
+        const ore = document.getElementById('updateOreSelect').value;
+        const raw = document.getElementById('updateRawPrice').value;
+        const ref = document.getElementById('updateRefPrice').value;
+        const now = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+
+        if (raw) document.getElementById(`p-${ore}-raw`).textContent = `~${raw}`;
+        if (ref) document.getElementById(`p-${ore}-ref`).textContent = `~${ref}`;
+        document.getElementById(`d-${ore}`).textContent = now;
+
+        const confirm = document.getElementById('updateConfirm');
+        confirm.style.display = 'block';
+        setTimeout(() => confirm.style.display = 'none', 2500);
+    }
+
+
+    let timerInterval = null;
+    let timerSeconds = 15 * 60;
+    let timerRunning = false;
+    let timerBaseSeconds = 15 * 60;
+
+    function formatTime(s) {
+        const m = Math.floor(s / 60);
+        const sec = s % 60;
+        return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+
+    function updateTimerDisplay() {
+        const el = document.getElementById('timer-display');
+        el.textContent = formatTime(timerSeconds);
+        timerSeconds <= 120 ? el.classList.add('critical') : el.classList.remove('critical');
+    }
+
+    function setTimer(minutes) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        timerBaseSeconds = minutes * 60;
+        timerSeconds = timerBaseSeconds;
+        const el = document.getElementById('timer-display');
+        el.classList.remove('critical');
+        el.textContent = formatTime(timerSeconds);
+    }
+
+    function setCustomTimer() {
+        const val = parseInt(document.getElementById('customMinutes').value);
+        if (!val || val < 1) { alert('Enter a valid duration in minutes.'); return; }
+        setTimer(val);
+    }
+
+    function startTimer() {
+        if (timerRunning) return;
+        timerRunning = true;
+        timerInterval = setInterval(() => {
+            if (timerSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                document.getElementById('timer-display').textContent = '💥 TOO LATE';
+                return;
+            }
+            timerSeconds--;
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function pauseTimer() {
+        clearInterval(timerInterval);
+        timerRunning = false;
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        timerSeconds = timerBaseSeconds;
+        const el = document.getElementById('timer-display');
+        el.classList.remove('critical');
+        el.textContent = formatTime(timerSeconds);
+    }
+</script>
+
+</body>
+</html>
