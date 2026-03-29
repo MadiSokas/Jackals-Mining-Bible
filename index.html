@@ -199,7 +199,7 @@
         .nav-link:hover { background: rgba(240, 165, 0, 0.1); color: var(--jackal-gold); border-color: rgba(240, 165, 0, 0.3); }
         .nav-link.active { background: var(--jackal-gold); color: black; box-shadow: 0 0 10px rgba(240, 165, 0, 0.4); }
 
- padding: 20px; border-radius: 8px; border: 1px solid #2a2e35; margin-bottom: 20px; }
+        .card { background: var(--surface); padding: 20px; border-radius: 8px; border: 1px solid #2a2e35; margin-bottom: 20px; }
         h2 { color: var(--jackal-gold); border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
@@ -296,6 +296,7 @@
         .cat-fps  { background: rgba(0,255,136,0.15); color: var(--success); border: 1px solid var(--success); }
         .cat-roc  { background: rgba(240,165,0,0.15); color: var(--jackal-gold); border: 1px solid var(--jackal-gold); }
         .cat-pyro { background: rgba(255,107,0,0.2); color: var(--jackal-orange); border: 1px solid var(--jackal-orange); }
+        .cat-nyx  { background: rgba(160,100,255,0.2); color: #a064ff; border: 1px solid #a064ff; }
         tr.tier-legendary td:first-child { border-left: 3px solid var(--danger); }
         tr.tier-epic      td:first-child { border-left: 3px solid var(--jackal-gold); }
         tr.tier-rare      td:first-child { border-left: 3px solid var(--accent-blue); }
@@ -514,6 +515,7 @@
                 <span><span class="cat-label cat-roc">ROC</span> Ground vehicle (ROC / ROC-DS)</span>
                 <span><span class="cat-label cat-fps">FPS</span> Hand tool (Pyro RYT + OreBit)</span>
                 <span><span class="cat-label cat-pyro">PYRO</span> Pyro system exclusive</span>
+                <span><span class="cat-label cat-nyx">NYX</span> Found in Nyx (Glaciem / Keeger / Delamar)</span>
             </div>
         </div>
 
@@ -524,6 +526,7 @@
                 <div class="mineral-tab" onclick="switchMineralTab(this,'mtab-roc')">ROC / Ground</div>
                 <div class="mineral-tab" onclick="switchMineralTab(this,'mtab-fps')">FPS / Hand</div>
                 <div class="mineral-tab" onclick="switchMineralTab(this,'mtab-pyro')">Pyro Exclusives</div>
+                <div class="mineral-tab" onclick="switchMineralTab(this,'mtab-nyx')">Nyx / Delamar</div>
             </div>
 
             <!-- ALL -->
@@ -535,30 +538,42 @@
                         <tr class="tier-legendary"><td><strong>Quantanium</strong></td><td>Volatile Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Quantum Fuel, Components</td><td><span class="badge badge-red">Critical</span></td></tr>
                         <tr class="tier-legendary"><td><strong>Janalite</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span></td><td>Ultra-rare components</td><td><span class="badge badge-red">Legendary</span></td></tr>
                         <!-- EPIC -->
-                        <tr class="tier-epic"><td><strong>Bexalite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Tier-1 Components</td><td><span class="badge badge-green">High</span></td></tr>
-                        <tr class="tier-epic"><td><strong>Taranite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Armor, Hull plating</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Bexalite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-nyx">NYX</span></td><td>Tier-1 Components</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Taranite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-nyx">NYX</span></td><td>Armor, Hull plating</td><td><span class="badge badge-green">High</span></td></tr>
                         <tr class="tier-epic"><td><strong>Borase</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Advanced electronics</td><td><span class="badge badge-green">High</span></td></tr>
-                        <tr class="tier-epic"><td><strong>Hadanite</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td>High-end fabrication</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Hadanite</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span> <span class="cat-label cat-nyx">NYX</span></td><td>High-end fabrication</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Sadaryx</strong></td><td>Crystal</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-nyx">NYX</span></td><td>Breaker Station lens fabrication</td><td><span class="badge badge-green">Critical (Breaker ops)</span></td></tr>
                         <!-- RARE -->
-                        <tr class="tier-rare"><td><strong>Gold</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Electronics, Circuits</td><td><span class="badge badge-blue">Medium</span></td></tr>
-                        <tr class="tier-rare"><td><strong>Laranite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>General crafting</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Gold</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-nyx">NYX</span></td><td>Electronics, Circuits</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Laranite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-nyx">NYX</span></td><td>General crafting</td><td><span class="badge badge-blue">Medium</span></td></tr>
                         <tr class="tier-rare"><td><strong>Agricium</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Agricultural tech</td><td><span class="badge badge-blue">Medium</span></td></tr>
-                        <tr class="tier-rare"><td><strong>Hephaestanite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>General manufacturing</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Hephaestanite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-nyx">NYX</span></td><td>General manufacturing</td><td><span class="badge badge-blue">Medium</span></td></tr>
                         <tr class="tier-rare"><td><strong>Diamond</strong></td><td>Ore / Gem</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-fps">FPS</span></td><td>Optics, Industrial</td><td><span class="badge badge-blue">Medium</span></td></tr>
-                        <tr class="tier-rare"><td><strong>Aphorite</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td>Decorative, Electronics</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Aphorite</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span> <span class="cat-label cat-nyx">NYX</span></td><td>Decorative, Electronics</td><td><span class="badge badge-blue">Medium</span></td></tr>
                         <tr class="tier-rare"><td><strong>Dolivine</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td>Industrial, Decorative</td><td><span class="badge badge-blue">Medium</span></td></tr>
-                        <!-- Pyro -->
+                        <!-- Pyro / Breaker -->
                         <tr class="tier-epic"><td><strong>Stileron</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-pyro">PYRO</span></td><td>Pyro Components</td><td><span class="badge badge-green">High</span></td></tr>
-                        <tr class="tier-epic"><td><strong>Savrilium</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-pyro">PYRO</span></td><td>Advanced Alloys</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Savrilium</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-pyro">PYRO</span> <span class="cat-label cat-nyx">NYX</span></td><td>Advanced Alloys, Crafting</td><td><span class="badge badge-green">High</span></td></tr>
+                        <tr class="tier-epic"><td><strong>Torite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-nyx">NYX</span></td><td>Advanced manufacturing, Crafting</td><td><span class="badge badge-green">High (Breaker drops)</span></td></tr>
                         <tr class="tier-rare"><td><strong>Riccite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-pyro">PYRO</span></td><td>Pyro manufacturing</td><td><span class="badge badge-blue">Medium</span></td></tr>
                         <!-- UNCOMMON -->
                         <tr class="tier-uncommon"><td><strong>Copper</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Wiring, Basic electronics</td><td><span class="badge badge-orange">Low</span></td></tr>
                         <tr class="tier-uncommon"><td><strong>Tungsten</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Heavy components</td><td><span class="badge badge-orange">Low</span></td></tr>
                         <tr class="tier-uncommon"><td><strong>Iron</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Structural</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Ouratite</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Industrial compounds</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Cobalt</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Batteries, Electronics</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Tin</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Alloys, Solder</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Silicon</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Electronics, Chips</td><td><span class="badge badge-orange">Low</span></td></tr>
                         <tr class="tier-uncommon"><td><strong>Corundum</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Abrasives, Optics</td><td><span class="badge badge-orange">Low</span></td></tr>
                         <tr class="tier-uncommon"><td><strong>Beryl</strong></td><td>Ore / Gem</td><td><span class="cat-label cat-ship">SHIP</span> <span class="cat-label cat-fps">FPS</span></td><td>Optics, Crystals</td><td><span class="badge badge-orange">Low</span></td></tr>
                         <tr class="tier-uncommon"><td><strong>Jaclium</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span></td><td>Precision components</td><td><span class="badge badge-orange">Low</span></td></tr>
                         <tr class="tier-uncommon"><td><strong>Saldynium</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span></td><td>Specialty crafting</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Beradom</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span></td><td>Specialty crafting, Decorative</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <tr class="tier-uncommon"><td><strong>Marok Gem</strong></td><td>Gemstone</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td>Decorative, Trade commodity</td><td><span class="badge badge-orange">Low</span></td></tr>
+                        <!-- RARE — Additional confirmed UEX ores -->
+                        <tr class="tier-rare"><td><strong>Atlasium</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Advanced alloys, Structural</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Dymantium</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Industrial manufacturing</td><td><span class="badge badge-blue">Medium</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Etam</strong></td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Specialty components</td><td><span class="badge badge-blue">Medium</span></td></tr>
                         <!-- COMMON -->
                         <tr class="tier-common"><td>Titanium</td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Bulk construction</td><td><span style="color:#555">Filler</span></td></tr>
                         <tr class="tier-common"><td>Aluminum</td><td>Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Bulk construction</td><td><span style="color:#555">Filler</span></td></tr>
@@ -566,6 +581,8 @@
                         <tr class="tier-common"><td>Glacosite</td><td>Ground Mineral</td><td><span class="cat-label cat-roc">ROC</span></td><td>Coolant materials</td><td><span style="color:#555">Situational</span></td></tr>
                         <tr class="tier-common"><td>Feynmaline</td><td>Ground Mineral</td><td><span class="cat-label cat-roc">ROC</span></td><td>Specialty compounds</td><td><span style="color:#555">Situational</span></td></tr>
                         <tr class="tier-common"><td>Carinite</td><td>Ground Mineral</td><td><span class="cat-label cat-roc">ROC</span></td><td>Specialty compounds</td><td><span style="color:#555">Situational</span></td></tr>
+                        <!-- ICE MINING -->
+                        <tr class="tier-rare"><td><strong>Ice (Pressurised)</strong></td><td>Ice / Refined</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Crafting recipes (4.7) — required for certain Fabricator blueprints</td><td><span class="badge badge-blue">Crafting Use</span></td></tr>
                         <tr class="tier-common"><td>Inert Materials</td><td>Waste</td><td>All</td><td>None</td><td><span style="color:#333">Dump</span></td></tr>
                     </tbody>
                 </table>
@@ -588,14 +605,23 @@
                         <tr class="tier-rare"><td><strong>Diamond</strong></td><td><span class="badge badge-blue">Rare</span></td><td>Optics, Industrial</td><td>Also found in FPS deposits.</td></tr>
                         <tr class="tier-uncommon"><td>Copper</td><td><span class="badge badge-orange">Uncommon</span></td><td>Wiring, Electronics</td><td>Sub-material filler. Take if high quality.</td></tr>
                         <tr class="tier-uncommon"><td>Tungsten</td><td><span class="badge badge-orange">Uncommon</span></td><td>Heavy components</td><td>Dense ore — good 700+ quality play.</td></tr>
-                        <tr class="tier-uncommon"><td>Iron</td><td><span class="badge badge-orange">Uncommon</span></td><td>Structural</td><td>Bulk filler. Only take 700+ quality.</td></tr>
+                        <tr class="tier-uncommon"><td>Iron</td><td><span class="badge badge-orange">Uncommon</span></td><td>Structural</td><td>Found with Ouratite. Bulk filler — 700+ only.</td></tr>
+                        <tr class="tier-uncommon"><td>Ouratite</td><td><span class="badge badge-orange">Uncommon</span></td><td>Industrial compounds</td><td>Found alongside Iron deposits in 4.7. New addition — check MrKraken's 4.7 guide for current locations.</td></tr>
+                        <tr class="tier-uncommon"><td>Cobalt</td><td><span class="badge badge-orange">Uncommon</span></td><td>Batteries, Electronics</td><td>Sub-material in many mixed rocks. Take if 700+.</td></tr>
+                        <tr class="tier-uncommon"><td>Tin</td><td><span class="badge badge-orange">Uncommon</span></td><td>Alloys, Solder</td><td>Common sub-material. Low value solo but useful as Fabricator filler.</td></tr>
+                        <tr class="tier-uncommon"><td>Silicon</td><td><span class="badge badge-orange">Uncommon</span></td><td>Electronics, Chips</td><td>Common sub-material. Electronics crafting input.</td></tr>
                         <tr class="tier-uncommon"><td>Corundum</td><td><span class="badge badge-orange">Uncommon</span></td><td>Abrasives, Optics</td><td>Low yield. Situational pick.</td></tr>
                         <tr class="tier-uncommon"><td>Beryl</td><td><span class="badge badge-orange">Uncommon</span></td><td>Optics, Crystals</td><td>Also harvestable by hand in asteroid fields.</td></tr>
+                        <tr class="tier-epic"><td><strong>Torite</strong></td><td><span class="badge badge-green">Epic (Breaker)</span></td><td>Advanced manufacturing, Crafting T0</td><td>Primary Breaker Station asteroid drop (Nyx Keeger Belt). Drops alongside Savrilium. Quality scales with laser alignment — aim for 100% yield. Not reliably found in standard belt rocks.</td></tr>
                         <tr class="tier-common"><td>Titanium</td><td>Common</td><td>Bulk construction</td><td>Don't skip 900+ quality runs.</td></tr>
                         <tr class="tier-common"><td>Aluminum</td><td>Common</td><td>Bulk construction</td><td>Cheapest ore. Filler only.</td></tr>
                         <tr class="tier-common"><td>Quartz</td><td>Common</td><td>Electronics substrate</td><td>Low value. Dump unless 900+ quality.</td></tr>
                     </tbody>
                 </table>
+                <div class="economy-alert" style="margin-top:16px;">
+                    <h4>🧊 Ice Mining (4.7 New)</h4>
+                    <p>Ice asteroids are now mineable in Pyro — scan for I-Type asteroid signatures. Extract ice and refine into <strong>Pressurised Ice</strong> at a refinery. Pressurised Ice is required for certain Crafting T0 Fabricator blueprints. Signature scanning changed in 4.7 — ice asteroids previously looked like salvage panels. Use Regolith.rocks for current ice asteroid locations. Recommended beginner ship: the <strong>Golem</strong> (rentable).</p>
+                </div>
             </div>
 
             <!-- ROC / GROUND -->
@@ -642,14 +668,51 @@
                     <thead><tr><th>Material</th><th>Type</th><th>Crafting Use</th><th>Primary Location</th></tr></thead>
                     <tbody>
                         <tr class="tier-epic"><td><strong>Stileron</strong></td><td>Ship Ore</td><td>Pyro-grade components, advanced alloys</td><td>Pyro I (Fairo), Akiro Cluster</td></tr>
-                        <tr class="tier-epic"><td><strong>Savrilium</strong></td><td>Ship Ore</td><td>Advanced alloys, structural fabrication</td><td>Pyro asteroid belts, Pyro II</td></tr>
+                        <tr class="tier-epic"><td><strong>Savrilium</strong></td><td>Ship Ore</td><td>Advanced alloys, structural fabrication, Crafting T0 recipes</td><td>Pyro asteroid belts, Pyro II — also drops inside Breaker Station asteroids (Nyx)</td></tr>
+                        <tr class="tier-epic"><td><strong>Torite</strong></td><td>Ship Ore</td><td>Advanced manufacturing, Crafting T0 recipes</td><td>Primarily from Breaker Station asteroid interiors (Nyx Keeger Belt). Also in Pyro belts. Confirmed by MrKraken's 4.7 guide as a primary Breaker Station drop alongside Savrilium.</td></tr>
                         <tr class="tier-rare"><td><strong>Riccite</strong></td><td>Ship Ore</td><td>Pyro manufacturing base material</td><td>Scattered across all Pyro zones</td></tr>
                         <tr class="tier-rare"><td><strong>Lindinium</strong></td><td>Ship Ore</td><td>Specialty components</td><td>Pyro asteroid fields</td></tr>
                     </tbody>
                 </table>
                 <div style="margin-top:16px;" class="economy-alert">
+                    <h4>🪨 Breaker Station Asteroid Drops — Savrilium &amp; Torite</h4>
+                    <p>When the Breaker Station laser fires and cracks open the asteroid, the interior contains <strong>Savrilium and Torite</strong> as the primary minable ores — confirmed by MrKraken's 100% yield guide. Higher laser alignment (more refractors aligned) means deeper drilling and better quality drops. These are not exclusively Pyro ores — they are accessible via the Nyx Breaker Station without needing to travel to Pyro. Refine at Levski before hauling.</p>
+                </div>
+                <div style="margin-top:12px;" class="economy-alert">
                     <h4>⚠️ Pyro Ore Note</h4>
                     <p>Pyro exclusives currently have limited refinery options in-system. Refine at Ruin Station or haul to Pyro Gateway before jumping back to Stanton. UEX Corp (uexcorp.space) has the most accurate current pricing for these ores as they fluctuate heavily.</p>
+                </div>
+            </div>
+                <div style="margin-top:16px;" class="economy-alert">
+                    <h4>⚠️ Pyro Ore Note</h4>
+                    <p>Pyro exclusives currently have limited refinery options in-system. Refine at Ruin Station or haul to Pyro Gateway before jumping back to Stanton. UEX Corp (uexcorp.space) has the most accurate current pricing for these ores as they fluctuate heavily.</p>
+                </div>
+            </div>
+
+            <!-- NYX / DELAMAR -->
+            <div id="mtab-nyx" class="mineral-panel">
+                <p style="color:#aaa; font-size:0.85rem; margin-bottom:12px;">Materials found in the Nyx system — Glaciem Ring (Belt Alpha), Keeger Belt (Belt Beta), and Delamar's surface and cave deposits. Nyx has no system-exclusive ores but offers Sadaryx crystals critical for Breaker Station operations, plus dense Hadanite and Aphorite clusters on Delamar.</p>
+
+                <table>
+                    <thead><tr><th>Material</th><th>Type</th><th>Zone</th><th>Notes</th></tr></thead>
+                    <tbody>
+                        <tr class="tier-epic"><td><strong>Sadaryx</strong></td><td>Crystal <span class="cat-label cat-fps">FPS</span></td><td>Delamar surface &amp; cave, derelict QV stations</td><td>White geode-like crystals near blue Aphorite deposits. Not for sale — used exclusively to fabricate Breaker Station laser lenses. Collect 15+ per Breaker run. Most reliably sourced here in Nyx than anywhere else.</td></tr>
+                        <tr class="tier-epic"><td><strong>Hadanite</strong></td><td>Gemstone <span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td>Delamar caves &amp; surface clusters</td><td>Best Hadanite cave concentrations outside Daymar. Sell direct — no refining needed. High value per unit. Great earner while waiting for a Breaker Station contract to reset.</td></tr>
+                        <tr class="tier-epic"><td><strong>Bexalite</strong></td><td>Ship Ore <span class="cat-label cat-ship">SHIP</span></td><td>Glaciem Ring (asteroid belt), Breaker Station asteroid interiors</td><td>Confirmed in the Glaciem Ring belt. Breaker Station asteroid interiors after laser fire often yield Bexalite as a primary ore. High priority for Fabricator Loop runs.</td></tr>
+                        <tr class="tier-epic"><td><strong>Taranite</strong></td><td>Ship Ore <span class="cat-label cat-ship">SHIP</span></td><td>Glaciem Ring, Keeger Belt</td><td>Found across both Nyx belts. Denser concentrations in the Keeger Belt outer sections. Pairs with Bexalite in multi-mineral rocks here.</td></tr>
+                        <tr class="tier-rare"><td><strong>Aphorite</strong></td><td>Gemstone <span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td>Delamar surface, near Sadaryx deposits</td><td>Found alongside Sadaryx on Delamar. Blue crystal clusters — use as a visual marker to locate Sadaryx nearby. Good ROC run material between Breaker ops.</td></tr>
+                        <tr class="tier-rare"><td><strong>Gold</strong></td><td>Ship Ore <span class="cat-label cat-ship">SHIP</span></td><td>Glaciem Ring asteroids</td><td>Sub-material in many Glaciem Ring rocks. Take if quality is 700+. Good filler cargo on Bexalite runs.</td></tr>
+                        <tr class="tier-rare"><td><strong>Laranite</strong></td><td>Ship Ore <span class="cat-label cat-ship">SHIP</span></td><td>Glaciem Ring, Delamar surface deposits</td><td>Reliable quality-farming ore in the Glaciem Ring. Good for 700+ Fabricator Loop runs as a solo Prospector target.</td></tr>
+                        <tr class="tier-rare"><td><strong>Hephaestanite</strong></td><td>Ship Ore <span class="cat-label cat-ship">SHIP</span></td><td>Glaciem Ring asteroids</td><td>Common sub-material across Glaciem Ring rocks. Worth extracting when quality is solid.</td></tr>
+                        <tr class="tier-legendary"><td><strong>Quantanium</strong></td><td>Ship Ore <span class="cat-label cat-ship">SHIP</span></td><td>Keeger Belt (outer sections)</td><td>Confirmed Quantanium deposits in deeper Keeger Belt sections. Lower player competition than Lyria or Pyro III. Refine at Levski before jumping — 15-minute timer applies. Keeger is pirate-heavy; escort required.</td></tr>
+                        <tr class="tier-epic"><td><strong>Torite</strong></td><td>Ship Ore <span class="cat-label cat-ship">SHIP</span></td><td>Breaker Station asteroid interior (Keeger Belt)</td><td>Primary ore dropped inside Breaker Station asteroids after the laser fires. Confirmed by MrKraken's 4.7 guide as one of the two key Breaker rewards alongside Savrilium. Higher yield alignment = higher quality Torite. Not reliably found in standard belt mining.</td></tr>
+                        <tr class="tier-epic"><td><strong>Savrilium</strong></td><td>Ship Ore <span class="cat-label cat-ship">SHIP</span></td><td>Breaker Station asteroid interior (Keeger Belt)</td><td>Drops alongside Torite inside Breaker Station asteroids. Also found in Pyro belts. Refine at Levski immediately after extraction.</td></tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top:16px;" class="economy-alert">
+                    <h4>🌑 Sadaryx — The Nyx-Specific Material</h4>
+                    <p>Sadaryx is not sold on any market — it has no aUEC value. Its only use is fabricating the three laser lenses required to complete a QV Breaker Station run. Each lens requires 4 Sadaryx; you need 3 lenses per run (12 minimum, 15+ recommended). Delamar caves and the Glaciem Ring's derelict QV stations are the most reliable source. Always stock up before heading to a Breaker Station contract.</p>
                 </div>
             </div>
         </div>
@@ -808,43 +871,88 @@
     <section id="danger">
         <h2>Ore Danger Ratings</h2>
         <div class="card">
-            <p>Not all ores are equal risk. Before you crack a rock, know what's inside and how badly it can hurt you if you lose control. These ratings combine volatility, instability behaviour, explosion multiplier, and 4.7 pirate AI aggression.</p>
+            <p>Every minable material has a risk profile. These ratings cover volatility, instability, explosion force, and pirate target risk. Use this before planning a run to pick the right modules, gadgets, and crew size.</p>
         </div>
 
         <div class="card danger-card">
             <h3>🔴 EXTREME — Quantanium</h3>
-            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-red">Very High</span></div>
-            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-red">15 min from extraction</span></div>
-            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-red">High — spikes fast</span></div>
-            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-red">Extreme — they know you're loaded</span></div>
-            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Use Rime module to reduce instability spikes. Escort required for MOLE runs. Start the Stability Timer the moment first fragment enters cargo. Do not stop at a station mid-haul.</p>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-red">Very High — ship-destroying</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-red">15 min from first extraction</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-red">High — spikes fast under power</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-red">Extreme — scanner signature gives you away</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Rime module mandatory. BoreMax gadget on every rock. Start Stability Timer on first fragment in cargo. Do not stop at any station mid-haul. Escort required for MOLE runs.</p>
+        </div>
+
+        <div class="card danger-card">
+            <h3>🔴 EXTREME (Breaker Interior) — Torite / Savrilium</h3>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-red">High — asteroid interior is confined</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-orange">None — but haul to Levski before jumping</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-orange">Moderate — manageable with correct modules</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-red">Extreme — Shared contracts have active PvP</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Exclusive contracts only until your crew knows the layout. Fighter covers exterior. Refine at Levski before leaving Nyx. Never haul raw Torite or Savrilium through a jump point without refining first.</p>
         </div>
 
         <div class="card warning-card">
-            <h3>🟠 HIGH — Bexalite / Taranite</h3>
+            <h3>🟠 HIGH — Bexalite / Taranite / Borase / Stileron</h3>
             <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-orange">Moderate</span></div>
-            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None — stable ore</span></div>
-            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-orange">Moderate — manageable with Surge</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None — stable ores</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-orange">Moderate — use Surge, watch the bar</span></div>
             <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-orange">High — valuable cargo attracts attention</span></div>
-            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Keep laser in green zone. Surge module recommended. Resistance can be high — use Brandt or Torrent if fracture is slow. No timer pressure but still a pirate magnet.</p>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Keep laser in green zone. Surge module recommended. Resistance can be high on Bexalite/Taranite — use Brandt or Sabir gadget on max-resistance rocks. No timer pressure but a pirate magnet in any system.</p>
         </div>
 
         <div class="card warning-card">
-            <h3>🟡 MEDIUM — Gold / Laranite</h3>
+            <h3>🟠 HIGH (Pirate Risk) — Savrilium / Riccite / Lindinium</h3>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-blue">Low — stable ores</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-blue">Low to moderate</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-red">Extreme — Pyro-exclusive ores = high-value target</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> The ores themselves are safe to mine. The danger is transit — Pyro has no law enforcement. Refine before hauling. Escort mandatory. These ores command premium prices which makes you a prime interdiction target.</p>
+        </div>
+
+        <div class="card warning-card">
+            <h3>🟡 MEDIUM — Gold / Laranite / Agricium / Hephaestanite / Diamond / Atlasium / Dymantium</h3>
             <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-blue">Low–Moderate</span></div>
             <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None</span></div>
             <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-blue">Low — forgiving extraction window</span></div>
-            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-blue">Medium — recognisable but not top priority</span></div>
-            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Good training ore for new Jackals. Stable enough to practice laser control. Still worth an escort in 4.7 due to smarter AI pirate flanking behaviour.</p>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-blue">Medium — valuable but not their first choice</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Good training ores for new Jackals. Stable enough to practice laser control. Still worth an escort in Pyro or Nyx due to smarter AI pirate flanking behaviour. High quality scores on these make them worthwhile Fabricator Loop inputs.</p>
+        </div>
+
+        <div class="card warning-card">
+            <h3>🟡 MEDIUM — FPS / ROC Gems (Hadanite, Aphorite, Dolivine, Saldynium, Jaclium, Beradom, Marok Gem)</h3>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-green">None — no laser, hand-mined</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-green">None — personal inventory risk only</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-orange">Medium — known gem locations attract griefers</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> No explosion risk from the mining itself. Main danger is surface exposure and ambush at known cave sites like Daymar. Use stealth — disable transponder before landing at high-value gem locations. ROC runs pair well with a wingman for surface coverage.</p>
+        </div>
+
+        <div class="card danger-card">
+            <h3>🔴 LEGENDARY — Janalite</h3>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-green">None — FPS hand-mined</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-green">None</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-red">Extreme — ~77M aUEC/SCU makes you the highest value target on the server</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> If you find Janalite, do not broadcast it in open comms. Secure extraction immediately. Fly with an armed escort directly to a TDD. Do not stop. Do not detour. This is a "drop everything" Org priority event — alert Jackals privately and get coverage fast.</p>
         </div>
 
         <div class="card safe-card">
-            <h3>🟢 LOW — Titanium / Agricium</h3>
+            <h3>🟢 LOW — Titanium / Aluminum / Copper / Iron / Tungsten / Corundum / Quartz / Ouratite / Cobalt / Tin / Silicon / Beryl</h3>
             <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-green">Minimal</span></div>
             <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None</span></div>
-            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-green">Very Low</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-green">Very Low — wide optimal window</span></div>
             <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-green">Low — not worth their time</span></div>
-            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Solo-safe in 4.7. Good for quality-farming runs where you're filling cargo with 700+ common material for the Fabricator Loop. Don't dismiss these — a 900-score Titanium has real crafting value.</p>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Solo-safe everywhere. Good for quality-farming runs and training new Jackals. Don't write off 900+ quality common ores — a high-quality Titanium or Cobalt batch has real Fabricator value. These also make excellent sub-material fillers when paired with epic ore primary rocks.</p>
+        </div>
+
+        <div class="card safe-card">
+            <h3>🟢 SAFE — Ground Minerals (Glacosite / Feynmaline / Carinite) / Ice</h3>
+            <div class="stat-row"><span><span class="stat-icon">💥</span> Explosion Multiplier</span><span class="badge badge-green">None</span></div>
+            <div class="stat-row"><span><span class="stat-icon">⏱️</span> Volatility Timer</span><span class="badge badge-green">None</span></div>
+            <div class="stat-row"><span><span class="stat-icon">📈</span> Instability</span><span class="badge badge-green">None</span></div>
+            <div class="stat-row"><span><span class="stat-icon">🏴‍☠️</span> Pirate Target Risk</span><span class="badge badge-green">None — not a target</span></div>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px;"><strong>Protocol:</strong> Completely safe to mine solo. Ground minerals are situational — low value but useful for specific crafting recipes. Ice asteroids in Pyro refine into Pressurised Ice needed for 4.7 crafting blueprints. Use Regolith.rocks to locate I-Type ice asteroid signatures.</p>
         </div>
     </section>
 
@@ -876,6 +984,7 @@
                 <div class="sys-tab" onclick="switchSysTabs(this,'stanton-tab-arc')">ArcCorp</div>
                 <div class="sys-tab" onclick="switchSysTabs(this,'stanton-tab-mic')">MicroTech</div>
                 <div class="sys-tab" onclick="switchSysTabs(this,'stanton-tab-gate')">Pyro Gateway</div>
+                <div class="sys-tab" onclick="switchSysTabs(this,'stanton-tab-nyx')">Nyx — Levski</div>
             </div>
 
             <div id="stanton-tab-hur" class="sys-panel active">
@@ -920,6 +1029,17 @@
                 </tbody></table>
                 <p class="price-update">Pyro Gateway is a critical staging point for Pyro runs — refine here before jumping if you're carrying Quantanium.</p>
             </div>
+
+            <div id="stanton-tab-nyx" class="sys-panel">
+                <table><thead><tr><th>Service</th><th>Location</th><th>Notes</th></tr></thead><tbody>
+                    <tr><td>Refinery Deck (x3 terminals)</td><td>Levski, Delamar</td><td>Full refining available — all methods supported including Dinyx Solventation. Multiple terminals means no queue delay. Primary refinery for all Nyx and Breaker Station ops.</td></tr>
+                    <tr><td>Cargo Depots</td><td>Levski, Delamar</td><td>External freight elevators for large cargo transfers. Good for MOLE and hauler offloads. Essential staging point before heading into the Keeger Belt.</td></tr>
+                    <tr><td>Mining Equipment Shop</td><td>Levski, Delamar</td><td>Laser heads, modules, gadgets, and FPS mining tools available. Sadaryx not sold here — must be harvested. Stock up on BoreMax and Sabir before Breaker runs.</td></tr>
+                    <tr><td>Grand Barter Marketplace</td><td>Levski, Delamar</td><td>Black-market adjacent internal marketplace. Good for finding rare gear and trading irregular cargo. Check for blueprint contracts and rare equipment here.</td></tr>
+                    <tr><td>Medbed / Respawn</td><td>Levski, Delamar</td><td>Set your ship spawn to Levski before heading into the belts. Critical for Breaker Station ops — if you die you respawn at Levski, not deep space.</td></tr>
+                </tbody></table>
+                <p class="price-update">⚠️ Nyx has no UEE law enforcement. Levski is People's Alliance territory — no CrimeStat consequences here but player and NPC piracy is common in both the Glaciem Ring and Keeger Belt. Always set ship spawn at Levski before undocking.</p>
+            </div>
         </div>
 
         <div class="card">
@@ -930,17 +1050,6 @@
             </tbody></table>
             <p class="price-update">⚠️ Pyro has no NPC law enforcement. Always fly with an escort or in a group when hauling refined ore out of Pyro.</p>
         </div>
-
-        <div class="card">
-            <h3>Nyx Refineries — Levski (Delamar)</h3>
-            <table><thead><tr><th>Service</th><th>Location</th><th>Notes</th></tr></thead><tbody>
-                <tr><td>Refinery Deck (x3)</td><td>Levski, Delamar</td><td>Multiple refinery terminals inside the facility. Full refining available — all methods supported.</td></tr>
-                <tr><td>Cargo Depots</td><td>Levski, Delamar</td><td>External freight elevators for large cargo transfers. Good for MOLE and hull haul offloads.</td></tr>
-                <tr><td>Mining Equipment</td><td>Levski, Delamar</td><td>Laser heads, modules, gadgets, and FPS mining tools available in-station. Stock up before heading into the belts.</td></tr>
-                <tr><td>Grand Barter</td><td>Levski, Delamar</td><td>Internal marketplace. Black-market adjacent — good for finding rare gear and trading off irregular cargo.</td></tr>
-            </tbody></table>
-            <p class="price-update">⚠️ Nyx has no UEE law enforcement. Levski is People's Alliance territory — respect their rules or face the residents. No CrimeStat consequences but player and NPC piracy is common in the belts.</p>
-        </div>
     </section>
 
     <!-- PYRO MINING ZONES -->
@@ -950,6 +1059,7 @@
         <div class="card economy-alert">
             <h4>🔥 Why Go to Pyro?</h4>
             <p>Pyro offers better odds at high-quality scores on premium ores and Pyro-exclusive materials not found in Stanton or Nyx. Stanton is consistent but heavily contested. Pyro is dangerous but rewards organised Jackal operations with rarer material distributions and less competition at remote asteroid fields. Always bring a combat escort. For lawless-system ops with better solo viability, see the <strong>Nyx Mining Zones</strong> section.</p>
+            <p style="margin-top:8px; color:var(--jackal-gold); font-size:0.88rem;">⭐ <strong>4.7 Confirmed:</strong> Pyro has a <strong>higher minimum quality floor</strong> on minerals than Stanton — even common ores roll higher quality scores here. This makes Pyro quality-farming runs more efficient per rock than equivalent Stanton runs.</p>
         </div>
 
         <div class="card">
@@ -1135,19 +1245,54 @@
             <h3>Ore Price Reference <span style="color:#555; font-size:0.75rem; font-weight:normal;">(aUEC/unit — update manually as market shifts)</span></h3>
             <div class="price-table-wrap">
                 <table>
-                    <thead><tr><th>Ore</th><th>Raw Sell</th><th>Refined Sell</th><th>Crafting Value</th><th>Last Updated</th></tr></thead>
+                    <thead><tr><th>Material</th><th>Type</th><th>Raw Sell</th><th>Refined Sell</th><th>Crafting Value</th><th>Last Updated</th></tr></thead>
                     <tbody id="priceTableBody">
-                        <tr><td>Quantanium</td><td id="p-qnt-raw">~25</td><td id="p-qnt-ref">~80–120</td><td><span class="badge badge-red">Critical</span></td><td><span class="price-update" id="d-qnt">—</span></td></tr>
-                        <tr><td>Bexalite</td><td id="p-bex-raw">~12</td><td id="p-bex-ref">~40–65</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-bex">—</span></td></tr>
-                        <tr><td>Taranite</td><td id="p-tar-raw">~10</td><td id="p-tar-ref">~35–55</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-tar">—</span></td></tr>
-                        <tr><td>Gold</td><td id="p-gld-raw">~5</td><td id="p-gld-ref">~15–25</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-gld">—</span></td></tr>
-                        <tr><td>Laranite</td><td id="p-lar-raw">~4</td><td id="p-lar-ref">~12–20</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-lar">—</span></td></tr>
-                        <tr><td>Agricium</td><td id="p-agr-raw">~3</td><td id="p-agr-ref">~8–14</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-agr">—</span></td></tr>
-                        <tr><td>Titanium</td><td id="p-tit-raw">~1</td><td id="p-tit-ref">~3–6</td><td><span class="badge badge-orange">Filler</span></td><td><span class="price-update" id="d-tit">—</span></td></tr>
+                        <tr style="background:#1a1d23;"><td colspan="6" style="color:#666; font-size:0.75rem; padding:6px 12px; text-transform:uppercase; letter-spacing:1px;">Ship Ores — Legendary / Epic</td></tr>
+                        <tr><td>Quantanium</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-qnt-raw">~25</td><td id="p-qnt-ref">~80–120</td><td><span class="badge badge-red">Critical</span></td><td><span class="price-update" id="d-qnt">—</span></td></tr>
+                        <tr><td>Bexalite</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-bex-raw">~12</td><td id="p-bex-ref">~40–65</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-bex">—</span></td></tr>
+                        <tr><td>Taranite</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-tar-raw">~10</td><td id="p-tar-ref">~35–55</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-tar">—</span></td></tr>
+                        <tr><td>Borase</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-bor-raw">~9</td><td id="p-bor-ref">~30–50</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-bor">—</span></td></tr>
+                        <tr style="background:#1a1d23;"><td colspan="6" style="color:#666; font-size:0.75rem; padding:6px 12px; text-transform:uppercase; letter-spacing:1px;">Ship Ores — Rare</td></tr>
+                        <tr><td>Gold</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-gld-raw">~5</td><td id="p-gld-ref">~15–25</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-gld">—</span></td></tr>
+                        <tr><td>Laranite</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-lar-raw">~4</td><td id="p-lar-ref">~12–20</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-lar">—</span></td></tr>
+                        <tr><td>Agricium</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-agr-raw">~3</td><td id="p-agr-ref">~8–14</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-agr">—</span></td></tr>
+                        <tr><td>Hephaestanite</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-hep-raw">~4</td><td id="p-hep-ref">~10–18</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-hep">—</span></td></tr>
+                        <tr><td>Diamond</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-dia-raw">~3</td><td id="p-dia-ref">~9–15</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-dia">—</span></td></tr>
+                        <tr><td>Atlasium</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-atl-raw">~7</td><td id="p-atl-ref">~20–35</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-atl">—</span></td></tr>
+                        <tr><td>Dymantium</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-dym-raw">~5</td><td id="p-dym-ref">~14–22</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-dym">—</span></td></tr>
+                        <tr><td>Etam</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-eta-raw">~5</td><td id="p-eta-ref">~13–20</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-eta">—</span></td></tr>
+                        <tr style="background:#1a1d23;"><td colspan="6" style="color:#666; font-size:0.75rem; padding:6px 12px; text-transform:uppercase; letter-spacing:1px;">Ship Ores — Uncommon / Common</td></tr>
+                        <tr><td>Copper</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-cop-raw">~2</td><td id="p-cop-ref">~5–9</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-cop">—</span></td></tr>
+                        <tr><td>Tungsten</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-tun-raw">~2</td><td id="p-tun-ref">~5–8</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-tun">—</span></td></tr>
+                        <tr><td>Iron</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-irn-raw">~1</td><td id="p-irn-ref">~3–6</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-irn">—</span></td></tr>
+                        <tr><td>Ouratite</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-our-raw">~2</td><td id="p-our-ref">~4–7</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-our">—</span></td></tr>
+                        <tr><td>Cobalt</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-cob-raw">~8</td><td id="p-cob-ref">~22–35</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-cob">—</span></td></tr>
+                        <tr><td>Tin</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-tin-raw">~1</td><td id="p-tin-ref">~3–5</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-tin">—</span></td></tr>
+                        <tr><td>Silicon</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-sil-raw">~1</td><td id="p-sil-ref">~3–5</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-sil">—</span></td></tr>
+                        <tr><td>Corundum</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-cor-raw">~2</td><td id="p-cor-ref">~4–7</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-cor">—</span></td></tr>
+                        <tr><td>Titanium</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-tit-raw">~1</td><td id="p-tit-ref">~3–6</td><td><span class="badge badge-orange">Filler</span></td><td><span class="price-update" id="d-tit">—</span></td></tr>
+                        <tr><td>Aluminum</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-alu-raw">~1</td><td id="p-alu-ref">~2–4</td><td><span class="badge badge-orange">Filler</span></td><td><span class="price-update" id="d-alu">—</span></td></tr>
+                        <tr><td>Quartz</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-qtz-raw">~1</td><td id="p-qtz-ref">~2–4</td><td><span class="badge badge-orange">Filler</span></td><td><span class="price-update" id="d-qtz">—</span></td></tr>
+                        <tr><td>Beryl</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-bry-raw">~2</td><td id="p-bry-ref">~4–7</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-bry">—</span></td></tr>
+                        <tr style="background:#1a1d23;"><td colspan="6" style="color:#666; font-size:0.75rem; padding:6px 12px; text-transform:uppercase; letter-spacing:1px;">Pyro / Nyx — Exclusives &amp; Breaker Drops</td></tr>
+                        <tr><td>Stileron</td><td><span class="cat-label cat-pyro">PYRO</span></td><td id="p-sti-raw">~11</td><td id="p-sti-ref">~35–55</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-sti">—</span></td></tr>
+                        <tr><td>Savrilium</td><td><span class="cat-label cat-pyro">PYRO</span> <span class="cat-label cat-nyx">NYX</span></td><td id="p-sav-raw">~10</td><td id="p-sav-ref">~30–48</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-sav">—</span></td></tr>
+                        <tr><td>Torite</td><td><span class="cat-label cat-nyx">NYX</span></td><td id="p-tor-raw">~10</td><td id="p-tor-ref">~30–48</td><td><span class="badge badge-green">High (Breaker drop)</span></td><td><span class="price-update" id="d-tor">—</span></td></tr>
+                        <tr><td>Riccite</td><td><span class="cat-label cat-pyro">PYRO</span></td><td id="p-ric-raw">~5</td><td id="p-ric-ref">~14–22</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-ric">—</span></td></tr>
+                        <tr><td>Lindinium</td><td><span class="cat-label cat-pyro">PYRO</span></td><td id="p-lin-raw">~4</td><td id="p-lin-ref">~10–18</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-lin">—</span></td></tr>
+                        <tr style="background:#1a1d23;"><td colspan="6" style="color:#666; font-size:0.75rem; padding:6px 12px; text-transform:uppercase; letter-spacing:1px;">FPS / ROC Gems — Sell Direct (per unit, no refining needed)</td></tr>
+                        <tr><td>Janalite</td><td><span class="cat-label cat-fps">FPS</span></td><td id="p-jan-raw">~77,000,000/SCU</td><td id="p-jan-ref">No refining needed</td><td><span class="badge badge-red">Legendary</span></td><td><span class="price-update" id="d-jan">—</span></td></tr>
+                        <tr><td>Hadanite</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td id="p-had-raw">~275/unit</td><td id="p-had-ref">No refining needed</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-had">—</span></td></tr>
+                        <tr><td>Aphorite</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td id="p-aph-raw">~152/unit</td><td id="p-aph-ref">No refining needed</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-aph">—</span></td></tr>
+                        <tr><td>Dolivine</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td id="p-dol-raw">~130/unit</td><td id="p-dol-ref">No refining needed</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-dol">—</span></td></tr>
+                        <tr><td>Saldynium</td><td><span class="cat-label cat-fps">FPS</span></td><td id="p-sal-raw">~125/unit</td><td id="p-sal-ref">No refining needed</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-sal">—</span></td></tr>
+                        <tr><td>Jaclium</td><td><span class="cat-label cat-fps">FPS</span></td><td id="p-jac-raw">~110/unit</td><td id="p-jac-ref">No refining needed</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-jac">—</span></td></tr>
+                        <tr><td>Beradom</td><td><span class="cat-label cat-fps">FPS</span></td><td id="p-ber-raw">~100/unit</td><td id="p-ber-ref">No refining needed</td><td><span class="badge badge-blue">Medium</span></td><td><span class="price-update" id="d-ber">—</span></td></tr>
+                        <tr><td>Marok Gem</td><td><span class="cat-label cat-fps">FPS</span> <span class="cat-label cat-roc">ROC</span></td><td id="p-mrk-raw">~35/unit</td><td id="p-mrk-ref">No refining needed</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-mrk">—</span></td></tr>
                     </tbody>
                 </table>
             </div>
-            <p class="price-update" style="margin-top:10px;">Prices fluctuate with server economy. Cross-reference with <strong>UEX Corp (uexcorp.space)</strong> and <strong>Regolith.rocks</strong> for live data before a major run.</p>
+            <p class="price-update" style="margin-top:10px;">Prices fluctuate with server economy. Cross-reference with <strong>UEX Corp (uexcorp.space)</strong> and <strong>Regolith.rocks</strong> for live data before a major run. FPS gem prices are per unit, not per SCU.</p>
         </div>
 
         <div class="card">
@@ -1156,13 +1301,53 @@
                 <div>
                     <label>Ore</label>
                     <select id="updateOreSelect">
-                        <option value="qnt">Quantanium</option>
-                        <option value="bex">Bexalite</option>
-                        <option value="tar">Taranite</option>
-                        <option value="gld">Gold</option>
-                        <option value="lar">Laranite</option>
-                        <option value="agr">Agricium</option>
-                        <option value="tit">Titanium</option>
+                        <optgroup label="Ship Ores — Epic/Legendary">
+                            <option value="qnt">Quantanium</option>
+                            <option value="bex">Bexalite</option>
+                            <option value="tar">Taranite</option>
+                            <option value="bor">Borase</option>
+                        </optgroup>
+                        <optgroup label="Ship Ores — Rare">
+                            <option value="gld">Gold</option>
+                            <option value="lar">Laranite</option>
+                            <option value="agr">Agricium</option>
+                            <option value="hep">Hephaestanite</option>
+                            <option value="dia">Diamond</option>
+                            <option value="atl">Atlasium</option>
+                            <option value="dym">Dymantium</option>
+                            <option value="eta">Etam</option>
+                        </optgroup>
+                        <optgroup label="Ship Ores — Uncommon/Common">
+                            <option value="cop">Copper</option>
+                            <option value="tun">Tungsten</option>
+                            <option value="irn">Iron</option>
+                            <option value="our">Ouratite</option>
+                            <option value="cob">Cobalt</option>
+                            <option value="tin">Tin</option>
+                            <option value="sil">Silicon</option>
+                            <option value="cor">Corundum</option>
+                            <option value="tit">Titanium</option>
+                            <option value="alu">Aluminum</option>
+                            <option value="qtz">Quartz</option>
+                            <option value="bry">Beryl</option>
+                        </optgroup>
+                        <optgroup label="Pyro / Nyx — Exclusives &amp; Breaker Drops">
+                            <option value="sti">Stileron</option>
+                            <option value="sav">Savrilium</option>
+                            <option value="tor">Torite</option>
+                            <option value="ric">Riccite</option>
+                            <option value="lin">Lindinium</option>
+                        </optgroup>
+                        <optgroup label="FPS / ROC Gems">
+                            <option value="jan">Janalite</option>
+                            <option value="had">Hadanite</option>
+                            <option value="aph">Aphorite</option>
+                            <option value="dol">Dolivine</option>
+                            <option value="sal">Saldynium</option>
+                            <option value="jac">Jaclium</option>
+                            <option value="ber">Beradom</option>
+                            <option value="mrk">Marok Gem</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div>
@@ -1187,6 +1372,7 @@
                 <tr><td>Area18 (ArcCorp)</td><td>Stanton</td><td>ArcCorp TDD — good for Gold, Laranite</td></tr>
                 <tr><td>New Babbage (MicroTech)</td><td>Stanton</td><td>New Babbage TDD — competitive Bexalite rates</td></tr>
                 <tr><td>Grim Hex (Yela)</td><td>Stanton</td><td>Outlaw station — no law, accepts all cargo</td></tr>
+                <tr><td>Levski (Delamar)</td><td>Nyx</td><td>Grand Barter marketplace + refinery output terminals. Best option for Breaker Station ore — no need to haul to Stanton.</td></tr>
                 <tr><td>Ruin Station (Terminus)</td><td>Pyro</td><td>Pyro's primary trade hub — volatile prices, no security</td></tr>
             </tbody></table>
         </div>
@@ -1199,6 +1385,10 @@
         <div class="card">
             <h3>What Is It?</h3>
             <p>Operation Breaker Stations takes players to the Keeger Belt in Nyx, where Shubin's recently acquired QV Breaker stations sit abandoned and unpowered, their rock-cracking capabilities long dormant. These missions come in either an Exclusive PvE format or an open FFA PvP format. Pick up the contract at Nyx in the Contract Manager under Ship Mining.</p>
+            <div class="economy-alert" style="margin-top:12px;">
+                <h4>⚠️ Reputation Gate</h4>
+                <p>Access to Breaker Station mining claims requires a <strong>minimum reputation level</strong> with the relevant faction before contracts appear. Build rep by completing standard contracts in the area first. If you don't see Breaker Station contracts in your Contract Manager, your reputation isn't high enough yet — run standard ship mining contracts in Nyx until they unlock.</p>
+            </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
                 <div class="zone-card safe-card">
                     <h4 style="color:var(--success)">🔒 Exclusive Contract</h4>
@@ -1296,14 +1486,16 @@
 
             <div class="phase-block">
                 <h4><span class="phase-num">PHASE 7</span> Mine the Asteroid Interior</h4>
-                <p>Descend into the cracked rock and extract what's inside.</p>
+                <p>Descend into the cracked rock and extract what's inside. The two primary ores are <strong>Savrilium</strong> and <strong>Torite</strong> — confirmed by MrKraken's 100% yield guide as the key Breaker Station drops.</p>
                 <ul>
-                    <li>Interior contains rare material deposits including Stileron, Savrilium, and high-quality Sadaryx</li>
-                    <li>Haul extracted ore back to your ship using the tractor beam setup</li>
-                    <li>The blueprints you earn from completing the contract are exclusive to these platforms. Do not skip looting bodies and containers — keycards unlock loot rooms with premium rewards</li>
+                    <li><strong>100% yield requires all refractors aligned</strong> — skipping any refractor reduces ore quality and quantity. Don't shortcut Phase 5.</li>
+                    <li>Savrilium and Torite are the primary ores. Quality scales with laser alignment — more mirrors = higher quality score on drops</li>
+                    <li>Haul extracted ore back to your ship using the tractor beam setup. Refine at Levski before jumping out of Nyx</li>
+                    <li>Blueprints are earned from completing the contract — they are the exclusive reward, not a unique ore. Check the contract terminal after completion</li>
+                    <li>Loot room keycards found on enemies and in containers unlock bonus loot rooms — always check bodies and crates</li>
                     <li>Use the proximity looting system (I key → box icon) to cycle containers fast</li>
                 </ul>
-                <div class="phase-tip">🏆 Rewards: Rare ore + exclusive Fabricator blueprints + aUEC payout. A clean full run can reach millions per session.</div>
+                <div class="phase-tip">🏆 Rewards: Savrilium + Torite ore (quality scales with alignment) + exclusive Fabricator blueprints + aUEC payout. Full 100% yield run with all refractors aligned can reach millions per session.</div>
             </div>
         </div>
     </section>
@@ -1699,6 +1891,7 @@
             <div class="loadout-section-label">1. Select Vessel</div>
             <select id="shipSelect">
                 <option value="prospector_safe">Prospector — Safe / Beginner</option>
+                <option value="golem">Golem — Budget Starter / Ice Mining</option>
                 <option value="prospector_quant">Prospector — Quantanium Specialist</option>
                 <option value="prospector_hard">Prospector — Hard Rock / Resistant</option>
                 <option value="prospector_speed">Prospector — Speed Run</option>
@@ -1735,15 +1928,54 @@
     <section id="calc">
         <h2>Profit Calculator</h2>
         <div class="card">
-            <label>Ore Type</label>
+            <label>Ore Type <span style="color:#555; font-size:0.78rem; font-weight:normal;">— FPS/ROC gems priced per unit, not per SCU</span></label>
             <select id="calcOre">
-                <option value="25">Quantanium (~25 aUEC/unit)</option>
-                <option value="12">Bexalite (~12 aUEC/unit)</option>
-                <option value="10">Taranite (~10 aUEC/unit)</option>
-                <option value="5">Gold (~5 aUEC/unit)</option>
-                <option value="4">Laranite (~4 aUEC/unit)</option>
-                <option value="3">Agricium (~3 aUEC/unit)</option>
-                <option value="1">Titanium / Common (~1 aUEC/unit)</option>
+                <optgroup label="Ship Ores — Epic/Legendary">
+                    <option value="25">Quantanium (~25 aUEC/unit)</option>
+                    <option value="12">Bexalite (~12 aUEC/unit)</option>
+                    <option value="10">Taranite (~10 aUEC/unit)</option>
+                    <option value="9">Borase (~9 aUEC/unit)</option>
+                </optgroup>
+                <optgroup label="Ship Ores — Rare">
+                    <option value="7">Atlasium (~7 aUEC/unit)</option>
+                    <option value="5">Gold (~5 aUEC/unit)</option>
+                    <option value="5">Dymantium (~5 aUEC/unit)</option>
+                    <option value="5">Etam (~5 aUEC/unit)</option>
+                    <option value="4">Laranite (~4 aUEC/unit)</option>
+                    <option value="4">Hephaestanite (~4 aUEC/unit)</option>
+                    <option value="3">Agricium (~3 aUEC/unit)</option>
+                    <option value="3">Diamond (~3 aUEC/unit)</option>
+                </optgroup>
+                <optgroup label="Ship Ores — Uncommon/Common">
+                    <option value="8">Cobalt (~8 aUEC/unit)</option>
+                    <option value="2">Copper (~2 aUEC/unit)</option>
+                    <option value="2">Tungsten (~2 aUEC/unit)</option>
+                    <option value="2">Ouratite (~2 aUEC/unit)</option>
+                    <option value="2">Corundum (~2 aUEC/unit)</option>
+                    <option value="2">Beryl (~2 aUEC/unit)</option>
+                    <option value="1">Iron (~1 aUEC/unit)</option>
+                    <option value="1">Titanium (~1 aUEC/unit)</option>
+                    <option value="1">Aluminum (~1 aUEC/unit)</option>
+                    <option value="1">Quartz (~1 aUEC/unit)</option>
+                    <option value="1">Tin (~1 aUEC/unit)</option>
+                    <option value="1">Silicon (~1 aUEC/unit)</option>
+                </optgroup>
+                <optgroup label="Pyro / Nyx — Exclusives &amp; Breaker Drops">
+                    <option value="11">Stileron (~11 aUEC/unit)</option>
+                    <option value="10">Savrilium (~10 aUEC/unit)</option>
+                    <option value="10">Torite (~10 aUEC/unit)</option>
+                    <option value="5">Riccite (~5 aUEC/unit)</option>
+                    <option value="4">Lindinium (~4 aUEC/unit)</option>
+                </optgroup>
+                <optgroup label="FPS / ROC Gems (price per unit, not per SCU)">
+                    <option value="275">Hadanite (~275 aUEC/unit)</option>
+                    <option value="152">Aphorite (~152 aUEC/unit)</option>
+                    <option value="130">Dolivine (~130 aUEC/unit)</option>
+                    <option value="125">Saldynium (~125 aUEC/unit)</option>
+                    <option value="110">Jaclium (~110 aUEC/unit)</option>
+                    <option value="100">Beradom (~100 aUEC/unit)</option>
+                    <option value="35">Marok Gem (~35 aUEC/unit)</option>
+                </optgroup>
             </select>
 
             <label>Cargo (SCU)</label>
@@ -1810,6 +2042,14 @@
             gadget: 'BoreMax (on unstable rocks)',
             role: 'Training / Low-Risk Stanton Runs',
             notes: 'Widened optimal window + slow charge rate. Very forgiving. Good for learning laser control on Gold and Laranite deposits.'
+        },
+        golem: {
+            name: 'Greycat Golem — Budget Starter',
+            laser: 'Arbor MH1',
+            modules: ['Optimum', 'Lifti'],
+            gadget: 'None recommended for beginners',
+            role: 'New Player / Budget Mining / Ice Mining',
+            notes: 'Rentable in-game — good for new Jackals before buying a Prospector. Great for ice asteroid runs in Pyro. Smaller cargo than Prospector but very accessible. Use Regolith.rocks to find I-Type asteroids for ice mining.'
         },
         prospector_quant: {
             name: 'MISC Prospector — Quantanium Specialist',
