@@ -1,4 +1,4 @@
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -367,6 +367,39 @@
         .calc-quality-row input[type=range] { flex: 1; min-width: 120px; accent-color: var(--jackal-gold); }
         .quality-val { color: var(--jackal-gold); font-weight: bold; min-width: 40px; text-align: right; }
 
+        /* ── ORG LOGISTICS & RESERVES ───────────────────────── */
+        .quality-tag { font-weight: bold; padding: 3px 8px; border-radius: 3px; font-size: 0.82em; text-transform: uppercase; display: inline-block; }
+        .qt-alpha { color: #d881ff; background: rgba(148,0,211,0.2); border: 1px solid #d881ff; }
+        .qt-beta  { color: var(--success); background: rgba(0,255,0,0.15); border: 1px solid var(--success); }
+        .qt-gamma { color: var(--jackal-orange); background: rgba(255,107,0,0.15); border: 1px solid var(--jackal-orange); }
+        .qt-delta { color: var(--danger); background: rgba(255,77,77,0.15); border: 1px solid var(--danger); }
+
+        .reserve-table td:first-child { font-weight: bold; }
+        .scu-display { font-size: 1.2em; font-weight: bold; color: #fff; }
+        .res-high { background: rgba(0,255,136,0.15); color: var(--success); padding: 3px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; }
+        .res-mid  { background: rgba(255,165,0,0.15);  color: #ffa500;        padding: 3px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; }
+        .res-low  { background: rgba(255,77,77,0.2);   color: var(--danger);  padding: 3px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; }
+
+        .comms-block { background: #000; border: 1px solid #2a2e35; padding: 14px 16px; border-radius: 4px; font-family: 'Courier New', monospace; margin-bottom: 12px; font-size: 0.88rem; }
+        .comms-block strong { color: var(--jackal-gold); }
+        .comms-block.critical { border-color: var(--danger); }
+        .comms-block.critical strong { color: var(--danger); }
+
+        .protocol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .protocol-card { background: #0d1017; border-left: 4px solid var(--jackal-gold); border-radius: 6px; padding: 16px; }
+        .protocol-card h4 { margin: 0 0 8px; color: var(--text-main); font-size: 0.95rem; }
+        .protocol-card p { margin: 0; font-size: 0.83rem; color: #aaa; line-height: 1.55; }
+
+        .split-result { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+        .split-box { background: #0a0c10; border-radius: 6px; padding: 16px; text-align: center; border: 1px solid #2a2e35; }
+        .split-box label { display: block; font-size: 0.72rem; text-transform: uppercase; color: var(--jackal-gold); margin-bottom: 6px; letter-spacing: 1px; }
+        .split-box span { font-size: 1.6rem; font-weight: bold; font-family: 'Courier New', monospace; color: var(--success); }
+
+        @media (max-width: 768px) {
+            .protocol-grid { grid-template-columns: 1fr; }
+            .split-result { grid-template-columns: 1fr; }
+        }
+
     </style>
 </head>
 <body>
@@ -420,6 +453,19 @@
         <div class="nav-link" onclick="showSection('lasers', this)">Lasers Deep Dive</div>
         <div class="nav-link" onclick="showSection('modules', this)">Modules Reference</div>
         <div class="nav-link" onclick="showSection('gadgets', this)">Gadgets</div>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-group-label">Org Logistics</span>
+        <div class="nav-link" onclick="showSection('cargo-protocols', this)">Cargo Protocols</div>
+        <div class="nav-link" onclick="showSection('fleet-formations', this)">Fleet Formations</div>
+        <div class="nav-link" onclick="showSection('comms', this)">Comms & Distress</div>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-group-label">Reserves</span>
+        <div class="nav-link" onclick="showSection('reserves', this)">Reserve Tracker</div>
+        <div class="nav-link" onclick="showSection('cargo-calc', this)">Cargo Split Calc</div>
     </div>
 
     <div class="nav-group">
@@ -582,7 +628,8 @@
                         <tr class="tier-common"><td>Feynmaline</td><td>Ground Mineral</td><td><span class="cat-label cat-roc">ROC</span></td><td>Specialty compounds</td><td><span style="color:#555">Situational</span></td></tr>
                         <tr class="tier-common"><td>Carinite</td><td>Ground Mineral</td><td><span class="cat-label cat-roc">ROC</span></td><td>Specialty compounds</td><td><span style="color:#555">Situational</span></td></tr>
                         <!-- ICE MINING -->
-                        <tr class="tier-rare"><td><strong>Ice (Pressurised)</strong></td><td>Ice / Refined</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Crafting recipes (4.7) — required for certain Fabricator blueprints</td><td><span class="badge badge-blue">Crafting Use</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Raw Ice</strong></td><td>Ice / Ore</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Refine into Pressurised Ice for Fabricator blueprints</td><td><span class="badge badge-blue">Crafting Input</span></td></tr>
+                        <tr class="tier-rare"><td><strong>Ice (Pressurised)</strong></td><td>Ice / Refined</td><td><span class="cat-label cat-ship">SHIP</span></td><td>Required for Fabricator blueprints (4.7) — refined form of Raw Ice</td><td><span class="badge badge-blue">Crafting Use</span></td></tr>
                         <tr class="tier-common"><td>Inert Materials</td><td>Waste</td><td>All</td><td>None</td><td><span style="color:#333">Dump</span></td></tr>
                     </tbody>
                 </table>
@@ -619,8 +666,8 @@
                     </tbody>
                 </table>
                 <div class="economy-alert" style="margin-top:16px;">
-                    <h4>🧊 Ice Mining (4.7 New)</h4>
-                    <p>Ice asteroids are now mineable in Pyro — scan for I-Type asteroid signatures. Extract ice and refine into <strong>Pressurised Ice</strong> at a refinery. Pressurised Ice is required for certain Crafting T0 Fabricator blueprints. Signature scanning changed in 4.7 — ice asteroids previously looked like salvage panels. Use Regolith.rocks for current ice asteroid locations. Recommended beginner ship: the <strong>Golem</strong> (rentable).</p>
+                    <h4>🧊 Ice Mining (4.7) — Raw Ice → Pressurised Ice</h4>
+                    <p><strong>Raw Ice</strong> is the ship-minable asteroid form — scan for I-Type asteroid signatures in Pyro. Extract Raw Ice with your ship laser, then refine it at a refinery deck into <strong>Pressurised Ice</strong>. Pressurised Ice is the form required for Fabricator blueprints in 4.7. You cannot use Raw Ice directly in the Fabricator — it must be refined first. Recommended ship: <strong>Golem</strong> (rentable). Use Regolith.rocks for current I-Type asteroid locations. Note: Asteroid signatures changed in 4.7 — ice asteroids previously looked like salvage panels on scanner.</p>
                 </div>
             </div>
 
@@ -829,6 +876,10 @@
         <div class="card">
             <h3>What Is It?</h3>
             <p>The <strong>Tier Zero Fabricator</strong> is Star Citizen's first player-driven crafting system, introduced in 4.7. It lets players manufacture FPS gear — weapons, armor, and components — directly from refined minerals. The Jackals' mining operation exists to feed this loop. Raw vendor sales are secondary.</p>
+            <div class="economy-alert" style="margin-top:12px;">
+                <h4>⚠️ 4.7 Crafting Scope — Not All Materials Are Active Yet</h4>
+                <p>Every resource now carries a quality score (0–1000), but <strong>only some materials feed into blueprints in 4.7</strong>. CIG has confirmed the intention is for every resource to eventually enter the crafting loop in later patches. Currently confirmed blueprint ingredients include: Taranite, Gold, Copper, Aluminum, Bexalite, Iron, Titanium, Silicon, Pressurised Ice, Savrilium, Torite, and several others. Mine everything at 700+ quality — even materials not yet in blueprints will be added. Don't discard high-quality batches of uncommon ores just because they aren't in a blueprint today.</p>
+            </div>
         </div>
         <div class="card">
             <h3>The Full Loop</h3>
@@ -1274,6 +1325,8 @@
                         <tr><td>Aluminum</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-alu-raw">~1</td><td id="p-alu-ref">~2–4</td><td><span class="badge badge-orange">Filler</span></td><td><span class="price-update" id="d-alu">—</span></td></tr>
                         <tr><td>Quartz</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-qtz-raw">~1</td><td id="p-qtz-ref">~2–4</td><td><span class="badge badge-orange">Filler</span></td><td><span class="price-update" id="d-qtz">—</span></td></tr>
                         <tr><td>Beryl</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-bry-raw">~2</td><td id="p-bry-ref">~4–7</td><td><span class="badge badge-orange">Low</span></td><td><span class="price-update" id="d-bry">—</span></td></tr>
+                        <tr><td>Raw Ice</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-rawice-raw">~1</td><td id="p-rawice-ref">~2–4</td><td><span class="badge badge-blue">Crafting Input</span></td><td><span class="price-update" id="d-rawice">—</span></td></tr>
+                        <tr><td>Ice (Pressurised)</td><td><span class="cat-label cat-ship">SHIP</span></td><td id="p-ice-raw">N/A (refined)</td><td id="p-ice-ref">~3–6</td><td><span class="badge badge-blue">Blueprint Req.</span></td><td><span class="price-update" id="d-ice">—</span></td></tr>
                         <tr style="background:#1a1d23;"><td colspan="6" style="color:#666; font-size:0.75rem; padding:6px 12px; text-transform:uppercase; letter-spacing:1px;">Pyro / Nyx — Exclusives &amp; Breaker Drops</td></tr>
                         <tr><td>Stileron</td><td><span class="cat-label cat-pyro">PYRO</span></td><td id="p-sti-raw">~11</td><td id="p-sti-ref">~35–55</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-sti">—</span></td></tr>
                         <tr><td>Savrilium</td><td><span class="cat-label cat-pyro">PYRO</span> <span class="cat-label cat-nyx">NYX</span></td><td id="p-sav-raw">~10</td><td id="p-sav-ref">~30–48</td><td><span class="badge badge-green">High</span></td><td><span class="price-update" id="d-sav">—</span></td></tr>
@@ -1330,6 +1383,8 @@
                             <option value="alu">Aluminum</option>
                             <option value="qtz">Quartz</option>
                             <option value="bry">Beryl</option>
+                            <option value="rawice">Raw Ice</option>
+                            <option value="ice">Ice (Pressurised)</option>
                         </optgroup>
                         <optgroup label="Pyro / Nyx — Exclusives &amp; Breaker Drops">
                             <option value="sti">Stileron</option>
@@ -2003,6 +2058,294 @@
         </div>
     </section>
 
+    <!-- CARGO PROTOCOLS -->
+    <section id="cargo-protocols">
+        <h2>Cargo Protocols</h2>
+        <div class="card economy-alert">
+            <h4>📦 The Quality-to-Market Pipeline</h4>
+            <p>How we handle assets is dictated by their grade. These are not suggestions — treat them as law to ensure the Org scales effectively. The quality grade maps directly to the Mining Bible's 0–1000 quality score system.</p>
+        </div>
+
+        <div class="protocol-grid">
+            <div class="protocol-card" style="border-color: #d881ff;">
+                <h4><span class="quality-tag qt-alpha">Alpha</span> — Legendary / Tier-1 (900–1000)</h4>
+                <p><strong style="color:var(--danger)">Protocol: DO NOT SELL.</strong><br>Must be transported directly to the Jackal Home Base or designated Division Hangars. These materials are heavily restricted and reserved exclusively for internal Fabricator crafting and base fortification. Alert the Crafter role immediately on extraction.</p>
+            </div>
+            <div class="protocol-card" style="border-color: var(--success);">
+                <h4><span class="quality-tag qt-beta">Beta</span> — High Grade (700–899)</h4>
+                <p><strong style="color:var(--success)">Protocol: INTERNAL REFINING ONLY.</strong><br>Move directly to industrial processing hubs. Pilots receive a 5% payout bonus for delivering to Org-contracted refining operations instead of standard market dumps. Primary Fabricator Loop input.</p>
+            </div>
+            <div class="protocol-card" style="border-color: var(--jackal-orange);">
+                <h4><span class="quality-tag qt-gamma">Gamma</span> — Industrial Grade (400–699)</h4>
+                <p><strong style="color:var(--jackal-orange)">Protocol: MARKET CLEARANCE.</strong><br>Authorized for immediate liquidation at any available Trade Terminal. These keep the day-to-day credits flowing for active members. Sell at Lorville TDD or New Babbage for best rates.</p>
+            </div>
+            <div class="protocol-card" style="border-color: var(--danger);">
+                <h4><span class="quality-tag qt-delta">Delta</span> — Raw / Impure (0–399)</h4>
+                <p><strong style="color:var(--danger)">Protocol: BULK DUMP.</strong><br>Only worth moving in massive shipments. Recommended as zero-risk training runs for new recruits to practice flight lanes and tractor-beam maneuvers. Do not prioritise over higher grade runs.</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+            <h3>Loading &amp; Efficiency Standards</h3>
+            <div class="protocol-grid">
+                <div class="protocol-card">
+                    <h4>⏱️ The 30-Minute Rule</h4>
+                    <p>If a loading operation at an outpost takes longer than 30 minutes, the risk of a hostile scout locating your position increases significantly. Be prepared to abandon half-filled grids and execute an immediate extract if the clock runs out.</p>
+                </div>
+                <div class="protocol-card">
+                    <h4>🚀 Ship-Specific Standards</h4>
+                    <p><strong>C2 Hercules:</strong> Prioritise 32 SCU containers only. Do not waste time stacking small boxes. Speed over precision.<br><br><strong>Freelancer MAX:</strong> Preferred hull for running high-value Alpha materials through contested corridors — smaller signature reduces interdiction risk.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FLEET FORMATIONS -->
+    <section id="fleet-formations">
+        <h2>Fleet Convoy Formations</h2>
+        <div class="card">
+            <p style="color:#aaa;">Never fly blind. When moving heavy assets, utilise the following assigned roles to ensure survival against hostile interdictions. Every formation needs all three roles filled before departure.</p>
+        </div>
+
+        <div class="protocol-grid">
+            <div class="protocol-card" style="border-color:var(--danger);">
+                <h4>⚔️ The Vanguard (Security)</h4>
+                <p>Flies point. Leads the quantum jump <strong>10 seconds ahead</strong> of the rest of the fleet. Primary objective: scout the destination for pirates and clear any active interdiction snares before the haulers arrive. Calls "Comms Clear" when zone is secure.</p>
+            </div>
+            <div class="protocol-card" style="border-color:var(--jackal-gold);">
+                <h4>📦 The Asset (The Hauler)</h4>
+                <p>Stays dead center of the formation. <strong>Never drops shields for any reason.</strong> If pulled out of quantum, the Asset holds course and prepares to burn toward a backup emergency waypoint while escorts engage. Calls "Contact Front" on any hostile detection.</p>
+            </div>
+            <div class="protocol-card" style="border-color:var(--success);">
+                <h4>🛠️ The Tail (Support/Salvage)</h4>
+                <p>Follows <strong>5km directly behind</strong> the main Asset. If the hauler goes down, the Tail is responsible for suppressing remaining hostiles and recovering floating cargo boxes using on-board tractor beams. Last ship out of any hostile zone.</p>
+            </div>
+            <div class="protocol-card">
+                <h4>🔒 Formation Rules</h4>
+                <p>All three roles must be filled before a high-value convoy departs. No exceptions for Alpha material runs. MOLE extraction runs to Levski require at minimum a Vanguard escort. Never quantum jump without confirming all fleet members are in formation on comms.</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+            <h3>Crew Size Requirements by Cargo Type</h3>
+            <table>
+                <thead><tr><th>Cargo Type</th><th>Min Crew</th><th>Formation Required</th><th>Priority Ship</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="quality-tag qt-delta">Delta</span> Raw bulk</td><td>1 solo</td><td>None</td><td>Any hauler</td></tr>
+                    <tr><td><span class="quality-tag qt-gamma">Gamma</span> Industrial</td><td>2</td><td>Vanguard + Asset</td><td>Freelancer MAX</td></tr>
+                    <tr><td><span class="quality-tag qt-beta">Beta</span> High Grade</td><td>3</td><td>Full formation</td><td>Freelancer MAX / C2</td></tr>
+                    <tr><td><span class="quality-tag qt-alpha">Alpha</span> Tier-1</td><td>4+</td><td>Full formation + spare escort</td><td>C2 Hercules</td></tr>
+                    <tr><td>Quantanium (any grade)</td><td>3+</td><td>Full formation — 15 min timer</td><td>Fastest available hauler</td></tr>
+                    <tr><td>Breaker Station ore (Nyx)</td><td>3+</td><td>Fighter + Hauler + Support</td><td>Refine at Levski first</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- COMMS & DISTRESS -->
+    <section id="comms">
+        <h2>Comms &amp; Distress Protocols</h2>
+        <div class="card">
+            <p style="color:#aaa; margin:0 0 16px;">Clear comms save ships. Use the exact designated callouts over voice channels during live hauling operations. Non-standard callouts during CODE ORANGE will be ignored.</p>
+
+            <div class="comms-block">
+                <strong>"Comms Clear"</strong><br>
+                Silence all non-essential chatter. Commencing quantum jump or entering a dangerous landing zone. Vanguard calls this when destination is confirmed safe.
+            </div>
+            <div class="comms-block">
+                <strong>"Contact Front"</strong><br>
+                Hostile bogeys detected on radar. Hauler prepares emergency evasive maneuvers. Vanguard begins engagement. Asset does not deviate from course unless instructed.
+            </div>
+            <div class="comms-block">
+                <strong>"Package Secure"</strong><br>
+                All cargo successfully loaded and secured. Formation is ready to depart. Await Vanguard confirmation before initiating quantum jump.
+            </div>
+            <div class="comms-block">
+                <strong>"QUANT IN CARGO"</strong><br>
+                Quantanium extraction confirmed. Stability Timer starts NOW. All fleet members acknowledge and plot fastest route to refinery. No detours, no stops.
+            </div>
+            <div class="comms-block critical">
+                <strong>"CODE ORANGE"</strong><br>
+                Direct distress override. The ship is under active attack. This signal mandates that <strong>all available Jackals</strong> — Security or otherwise — immediately drop current tasks and jump directly to the Asset's beacon. No exceptions.
+            </div>
+            <div class="comms-block critical">
+                <strong>"HARD EXTRACT"</strong><br>
+                Situation is unrecoverable. Abandon cargo if necessary. All ships break formation and burn to nearest safe point independently. Regroup at Levski or GrimHEX.
+            </div>
+
+            <h3 style="margin-top:20px;">Mining-Specific Callouts</h3>
+            <div class="comms-block">
+                <strong>"Rock Hot"</strong> — Rock is cracked and fragments are volatile. All non-miners stay clear of the extraction zone.
+            </div>
+            <div class="comms-block">
+                <strong>"Belt Clear"</strong> — Scanner shows no pirate signatures in the immediate asteroid field. Safe to begin extraction.
+            </div>
+            <div class="comms-block">
+                <strong>"Sadaryx Confirmed"</strong> — Sadaryx crystals located on Delamar/Breaker Station. Crafter role reports to collection point.
+            </div>
+        </div>
+    </section>
+
+    <!-- RESERVE TRACKER -->
+    <section id="reserves">
+        <h2>Reserve Tracker</h2>
+        <div class="card economy-alert">
+            <h4>📊 Org Material Reserves</h4>
+            <p>Log exact quality scores (0–1000) and SCU amounts for each batch. Each entry stores the precise quality score you measured in-game. Use the filters to find specific materials or tiers. Export your ledger to a file and reload it next session.</p>
+        </div>
+
+        <!-- CONTROLS ROW -->
+        <div class="card">
+            <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;">
+                <div style="flex:1; min-width:140px;">
+                    <label>Filter by Material</label>
+                    <select id="res-filter-mat" onchange="renderLedger()">
+                        <option value="">All Materials</option>
+                    </select>
+                </div>
+                <div style="flex:1; min-width:140px;">
+                    <label>Filter by Tier</label>
+                    <select id="res-filter-tier" onchange="renderLedger()">
+                        <option value="">All Tiers</option>
+                        <option value="alpha">Alpha (900+)</option>
+                        <option value="beta">Beta (700–899)</option>
+                        <option value="gamma">Gamma (400–699)</option>
+                        <option value="delta">Delta (0–399)</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                    <button onclick="exportLedger()" style="margin-top:0; background:#1a1d23; color:var(--jackal-gold); border:1px solid var(--jackal-gold); padding:10px 16px; font-size:0.82rem;">⬇ Export Ledger</button>
+                    <label style="margin:0; cursor:pointer;">
+                        <span style="display:inline-block; background:#1a1d23; color:var(--accent-blue); border:1px solid var(--accent-blue); padding:10px 16px; border-radius:4px; font-size:0.82rem; font-weight:bold; text-transform:uppercase; cursor:pointer;">⬆ Load Ledger</span>
+                        <input type="file" id="res-import-file" accept=".json" onchange="importLedger(event)" style="display:none;" />
+                    </label>
+                    <button onclick="clearLedger()" style="margin-top:0; background:rgba(255,77,77,0.15); color:var(--danger); border:1px solid var(--danger); padding:10px 16px; font-size:0.82rem;">🗑 Clear All</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUMMARY TOTALS -->
+        <div class="card">
+            <h3 style="margin-top:0;">Stockpile Summary <span style="color:#555; font-size:0.75rem; font-weight:normal;">(total SCU per material across all quality scores)</span></h3>
+            <div id="res-summary" style="color:#555; font-size:0.85rem;">No entries logged yet.</div>
+        </div>
+
+        <!-- LEDGER TABLE -->
+        <div class="card" style="overflow-x:auto;">
+            <h3 style="margin-top:0;">Batch Ledger</h3>
+            <table id="res-ledger-table">
+                <thead>
+                    <tr>
+                        <th>Material</th>
+                        <th>Quality Score</th>
+                        <th>Tier</th>
+                        <th>SCU</th>
+                        <th>Protocol</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody id="res-ledger-tbody">
+                    <tr id="res-empty-row"><td colspan="6" style="text-align:center; color:#555; padding:24px;">No batches logged. Add an entry below.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- LOG ENTRY PANEL -->
+        <div class="card">
+            <h3 style="margin-top:0;">Log New Batch</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div>
+                    <label>Material</label>
+                    <select id="res-material"></select>
+                </div>
+                <div>
+                    <label>Exact Quality Score (0–1000)</label>
+                    <input type="number" id="res-quality" placeholder="e.g. 714.50" min="0" max="1000" step="0.01" />
+                </div>
+                <div>
+                    <label>SCU Amount</label>
+                    <input type="number" id="res-scu" placeholder="e.g. 32.50" min="0.01" step="0.01" />
+                </div>
+                <div>
+                    <label>Notes (optional)</label>
+                    <input type="text" id="res-notes" placeholder="e.g. Lyria surface run" />
+                </div>
+            </div>
+            <button onclick="commitReserve()" style="margin-top:14px;">Add to Ledger</button>
+            <p id="res-confirm" style="color:var(--success); font-size:0.85rem; margin-top:8px; display:none;">✓ Batch added.</p>
+        </div>
+    </section>
+
+    <!-- CARGO SPLIT CALCULATOR -->
+    <section id="cargo-calc">
+        <h2>Cargo Split Calculator</h2>
+        <div class="card economy-alert">
+            <h4>💰 70/30 Pilot / Org Split</h4>
+            <p>Pilots receive <strong>70%</strong> of the haul value. The Org takes <strong>30%</strong> into the reserve fund. Quality grade multipliers are aligned with the Mining Bible's 0–1000 quality score system. Alpha material runs earn pilots a bonus multiplier.</p>
+        </div>
+
+        <div class="card">
+            <label>Material</label>
+            <select id="split-material">
+                <optgroup label="Epic / Legendary Ship Ores">
+                    <option value="25">Quantanium (~25 aUEC/unit)</option>
+                    <option value="12">Bexalite (~12 aUEC/unit)</option>
+                    <option value="10">Taranite (~10 aUEC/unit)</option>
+                    <option value="9">Borase (~9 aUEC/unit)</option>
+                    <option value="11">Stileron (~11 aUEC/unit)</option>
+                    <option value="10">Savrilium (~10 aUEC/unit)</option>
+                    <option value="10">Torite (~10 aUEC/unit)</option>
+                    <option value="7">Atlasium (~7 aUEC/unit)</option>
+                </optgroup>
+                <optgroup label="Rare Ship Ores">
+                    <option value="5">Gold (~5 aUEC/unit)</option>
+                    <option value="4">Laranite (~4 aUEC/unit)</option>
+                    <option value="4">Hephaestanite (~4 aUEC/unit)</option>
+                    <option value="3">Agricium (~3 aUEC/unit)</option>
+                    <option value="5">Dymantium (~5 aUEC/unit)</option>
+                    <option value="5">Etam (~5 aUEC/unit)</option>
+                </optgroup>
+                <optgroup label="FPS / ROC Gems (per unit)">
+                    <option value="275">Hadanite (~275 aUEC/unit)</option>
+                    <option value="152">Aphorite (~152 aUEC/unit)</option>
+                    <option value="130">Dolivine (~130 aUEC/unit)</option>
+                    <option value="125">Saldynium (~125 aUEC/unit)</option>
+                </optgroup>
+            </select>
+
+            <label>Quality Grade</label>
+            <select id="split-grade">
+                <option value="1.5">Alpha — Legendary / Tier-1 (×1.5 bonus)</option>
+                <option value="1.2">Beta — High Grade (×1.2)</option>
+                <option value="1.0" selected>Gamma — Industrial Grade (×1.0)</option>
+                <option value="0.7">Delta — Raw / Impure (×0.7)</option>
+            </select>
+
+            <label>Cargo Amount (SCU)</label>
+            <input type="number" id="split-scu" placeholder="e.g. 32" min="1" />
+
+            <label>Crew Size (splits pilot share equally)</label>
+            <input type="number" id="split-crew" placeholder="e.g. 3" min="1" value="1" />
+
+            <button onclick="calcSplit()" style="margin-top:12px;">Calculate Split</button>
+
+            <div class="split-result" id="split-result" style="display:none;">
+                <div class="split-box">
+                    <label>Total Haul Value</label>
+                    <span id="split-total">0</span>
+                </div>
+                <div class="split-box">
+                    <label>Org Reserve (30%)</label>
+                    <span id="split-org" style="color:var(--jackal-gold);">0</span>
+                </div>
+                <div class="split-box" style="grid-column: 1 / -1;">
+                    <label id="split-per-label">Per Pilot (70% ÷ crew)</label>
+                    <span id="split-per">0</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </main>
 
 <script>
@@ -2260,6 +2603,220 @@
         el.classList.remove('critical');
         el.textContent = formatTime(timerSeconds);
     }
+
+    // ── RESERVE TRACKER ──────────────────────────────────────────
+    const RESERVE_MATERIALS = [
+        // Epic / Legendary Ship Ores
+        { key: 'quant',  label: 'Quantanium',       group: 'Epic/Legendary' },
+        { key: 'bex',    label: 'Bexalite',          group: 'Epic/Legendary' },
+        { key: 'tar',    label: 'Taranite',           group: 'Epic/Legendary' },
+        { key: 'bor',    label: 'Borase',             group: 'Epic/Legendary' },
+        { key: 'sti',    label: 'Stileron',           group: 'Epic/Legendary' },
+        { key: 'sav',    label: 'Savrilium',          group: 'Epic/Legendary' },
+        { key: 'tor',    label: 'Torite',             group: 'Epic/Legendary' },
+        // Rare Ship Ores
+        { key: 'gld',    label: 'Gold',               group: 'Rare' },
+        { key: 'lar',    label: 'Laranite',           group: 'Rare' },
+        { key: 'agr',    label: 'Agricium',           group: 'Rare' },
+        { key: 'hep',    label: 'Hephaestanite',      group: 'Rare' },
+        { key: 'dia',    label: 'Diamond',            group: 'Rare' },
+        { key: 'atl',    label: 'Atlasium',           group: 'Rare' },
+        { key: 'dym',    label: 'Dymantium',          group: 'Rare' },
+        { key: 'eta',    label: 'Etam',               group: 'Rare' },
+        { key: 'lin',    label: 'Lindinium',          group: 'Rare' },
+        { key: 'ric',    label: 'Riccite',            group: 'Rare' },
+        // Uncommon Ship Ores
+        { key: 'cop',    label: 'Copper',             group: 'Uncommon' },
+        { key: 'tun',    label: 'Tungsten',           group: 'Uncommon' },
+        { key: 'irn',    label: 'Iron',               group: 'Uncommon' },
+        { key: 'our',    label: 'Ouratite',           group: 'Uncommon' },
+        { key: 'cob',    label: 'Cobalt',             group: 'Uncommon' },
+        { key: 'tin',    label: 'Tin',                group: 'Uncommon' },
+        { key: 'sil',    label: 'Silicon',            group: 'Uncommon' },
+        { key: 'cor',    label: 'Corundum',           group: 'Uncommon' },
+        { key: 'bry',    label: 'Beryl',              group: 'Uncommon' },
+        // Common Ship Ores
+        { key: 'tit',    label: 'Titanium',           group: 'Common' },
+        { key: 'alu',    label: 'Aluminum',           group: 'Common' },
+        { key: 'qtz',    label: 'Quartz',             group: 'Common' },
+        // FPS / ROC Gems
+        { key: 'jan',    label: 'Janalite',           group: 'FPS Gem' },
+        { key: 'had',    label: 'Hadanite',           group: 'FPS Gem' },
+        { key: 'aph',    label: 'Aphorite',           group: 'FPS Gem' },
+        { key: 'dol',    label: 'Dolivine',           group: 'FPS Gem' },
+        { key: 'sal',    label: 'Saldynium',          group: 'FPS Gem' },
+        { key: 'jac',    label: 'Jaclium',            group: 'FPS Gem' },
+        { key: 'ber',    label: 'Beradom',            group: 'FPS Gem' },
+        { key: 'mrk',    label: 'Marok Gem',          group: 'FPS Gem' },
+        // Ground Minerals
+        { key: 'glac',   label: 'Glacosite',          group: 'Ground Mineral' },
+        { key: 'feyn',   label: 'Feynmaline',         group: 'Ground Mineral' },
+        { key: 'cari',   label: 'Carinite',           group: 'Ground Mineral' },
+        // Refined / Special
+        { key: 'rawice', label: 'Raw Ice',           group: 'Refined' },
+        { key: 'ice',    label: 'Ice (Pressurised)', group: 'Refined' },
+    ];
+
+    const reserveData = {}; // kept for legacy compat, not used by new system
+
+    // ── RESERVE TRACKER — PRECISION QUALITY SCORE SYSTEM ─────────
+    let ledgerEntries = [];
+    let nextEntryId   = 1;
+
+    function qualityToTier(q) {
+        if (q >= 900) return 'alpha';
+        if (q >= 700) return 'beta';
+        if (q >= 400) return 'gamma';
+        return 'delta';
+    }
+    function tierBadge(tier) {
+        const map = { alpha:'<span class="quality-tag qt-alpha">Alpha</span>', beta:'<span class="quality-tag qt-beta">Beta</span>', gamma:'<span class="quality-tag qt-gamma">Gamma</span>', delta:'<span class="quality-tag qt-delta">Delta</span>' };
+        return map[tier] || '';
+    }
+    function tierProtocol(tier) {
+        const map = { alpha:'<span style="color:#d881ff;font-size:0.78rem;font-weight:bold;">DO NOT SELL</span>', beta:'<span style="color:var(--success);font-size:0.78rem;font-weight:bold;">INTERNAL REFINING</span>', gamma:'<span style="color:var(--jackal-orange);font-size:0.78rem;font-weight:bold;">MARKET CLEARANCE</span>', delta:'<span style="color:var(--danger);font-size:0.78rem;font-weight:bold;">BULK DUMP</span>' };
+        return map[tier] || '';
+    }
+
+    function buildReserveUI() {
+        const matSel       = document.getElementById('res-material');
+        const filterMatSel = document.getElementById('res-filter-mat');
+        if (!matSel || !filterMatSel) return;
+        matSel.innerHTML       = '';
+        filterMatSel.innerHTML = '<option value="">All Materials</option>';
+        let currentGroup = '';
+        let currentOG = null, currentFG = null;
+        RESERVE_MATERIALS.forEach(m => {
+            if (m.group !== currentGroup) {
+                currentGroup = m.group;
+                currentOG = document.createElement('optgroup'); currentOG.label = m.group; matSel.appendChild(currentOG);
+                currentFG = document.createElement('optgroup'); currentFG.label = m.group; filterMatSel.appendChild(currentFG);
+            }
+            const o1 = document.createElement('option'); o1.value = m.key; o1.textContent = m.label; currentOG.appendChild(o1);
+            const o2 = document.createElement('option'); o2.value = m.key; o2.textContent = m.label; currentFG.appendChild(o2);
+        });
+    }
+
+    function commitReserve() {
+        const matKey  = document.getElementById('res-material').value;
+        const quality = parseFloat(document.getElementById('res-quality').value);
+        const scu     = parseFloat(document.getElementById('res-scu').value);
+        const notes   = document.getElementById('res-notes').value.trim();
+        if (isNaN(quality) || quality < 0 || quality > 1000) { alert('Quality score must be 0–1000.'); return; }
+        if (isNaN(scu) || scu <= 0) { alert('Enter a valid SCU amount.'); return; }
+        const matLabel = RESERVE_MATERIALS.find(m => m.key === matKey)?.label || matKey;
+        ledgerEntries.push({ id: nextEntryId++, materialKey: matKey, materialLabel: matLabel, quality, tier: qualityToTier(quality), scu, notes });
+        renderLedger();
+        renderSummary();
+        const conf = document.getElementById('res-confirm');
+        conf.style.display = 'block';
+        setTimeout(() => conf.style.display = 'none', 2500);
+        document.getElementById('res-quality').value = '';
+        document.getElementById('res-scu').value     = '';
+        document.getElementById('res-notes').value   = '';
+    }
+
+    function removeEntry(id) {
+        ledgerEntries = ledgerEntries.filter(e => e.id !== id);
+        renderLedger();
+        renderSummary();
+    }
+
+    function renderLedger() {
+        const tbody = document.getElementById('res-ledger-tbody');
+        if (!tbody) return;
+        const filterMat  = document.getElementById('res-filter-mat')?.value  || '';
+        const filterTier = document.getElementById('res-filter-tier')?.value || '';
+        const filtered   = ledgerEntries.filter(e => (!filterMat || e.materialKey === filterMat) && (!filterTier || e.tier === filterTier));
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#555;padding:24px;">${ledgerEntries.length === 0 ? 'No batches logged. Add an entry below.' : 'No entries match current filters.'}</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = filtered.map(e => `
+            <tr>
+                <td><strong>${e.materialLabel}</strong></td>
+                <td><span style="font-family:'Courier New',monospace;font-size:1.1rem;color:var(--jackal-gold);font-weight:bold;">${e.quality}</span></td>
+                <td>${tierBadge(e.tier)}</td>
+                <td><strong>${e.scu}</strong> SCU${e.notes ? `<br><span style="color:#555;font-size:0.78rem;">${e.notes}</span>` : ''}</td>
+                <td>${tierProtocol(e.tier)}</td>
+                <td><button onclick="removeEntry(${e.id})" style="background:rgba(255,77,77,0.15);color:var(--danger);border:1px solid var(--danger);padding:4px 10px;font-size:0.75rem;margin-top:0;text-transform:none;">Remove</button></td>
+            </tr>`).join('');
+    }
+
+    function renderSummary() {
+        const el = document.getElementById('res-summary');
+        if (!el) return;
+        if (ledgerEntries.length === 0) { el.innerHTML = '<span style="color:#555;">No entries logged yet.</span>'; return; }
+        const grouped = {};
+        ledgerEntries.forEach(e => {
+            if (!grouped[e.materialLabel]) grouped[e.materialLabel] = { alpha:0, beta:0, gamma:0, delta:0, total:0 };
+            grouped[e.materialLabel][e.tier] += e.scu;
+            grouped[e.materialLabel].total   += e.scu;
+        });
+        const tc = { alpha:'#d881ff', beta:'var(--success)', gamma:'var(--jackal-orange)', delta:'var(--danger)' };
+        const tl = { alpha:'α', beta:'β', gamma:'γ', delta:'δ' };
+        el.innerHTML = Object.entries(grouped).map(([label, d]) => {
+            const bd = ['alpha','beta','gamma','delta'].filter(t => d[t] > 0).map(t => `<span style="color:${tc[t]};margin-right:8px;">${tl[t]} ${d[t]} SCU</span>`).join('');
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1a1d23;flex-wrap:wrap;gap:4px;"><strong style="color:var(--text-main);min-width:140px;">${label}</strong><span style="flex:1;">${bd}</span><span style="color:var(--accent-blue);font-weight:bold;min-width:80px;text-align:right;">${d.total} SCU total</span></div>`;
+        }).join('');
+    }
+
+    function exportLedger() {
+        if (ledgerEntries.length === 0) { alert('No entries to export.'); return; }
+        const blob = new Blob([JSON.stringify({ version:1, exported:new Date().toISOString(), entries:ledgerEntries }, null, 2)], { type:'application/json' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `jackals-reserves-${new Date().toISOString().slice(0,10)}.json`; a.click();
+    }
+
+    function importLedger(event) {
+        const file = event.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (!data.entries || !Array.isArray(data.entries)) throw new Error();
+                ledgerEntries = data.entries;
+                nextEntryId   = Math.max(0, ...ledgerEntries.map(e => e.id)) + 1;
+                renderLedger(); renderSummary();
+                alert(`✓ Loaded ${ledgerEntries.length} entries from ${file.name}`);
+            } catch { alert('Failed to load — file may be corrupted or wrong format.'); }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    function clearLedger() {
+        if (!confirm('Clear all ledger entries? This cannot be undone.')) return;
+        ledgerEntries = []; nextEntryId = 1;
+        renderLedger(); renderSummary();
+    }
+
+    // ── CARGO SPLIT CALCULATOR ───────────────────────────────────
+    function calcSplit() {
+        const pricePerUnit = parseFloat(document.getElementById('split-material').value);
+        const grade        = parseFloat(document.getElementById('split-grade').value);
+        const scu          = parseFloat(document.getElementById('split-scu').value);
+        const crew         = Math.max(1, parseInt(document.getElementById('split-crew').value) || 1);
+
+        if (!scu || scu <= 0) { alert('Enter a valid SCU amount.'); return; }
+
+        const unitsPerSCU = 100;
+        const total       = Math.round(pricePerUnit * unitsPerSCU * scu * grade);
+        const orgCut      = Math.round(total * 0.30);
+        const pilotPool   = total - orgCut;
+        const perPilot    = Math.round(pilotPool / crew);
+
+        document.getElementById('split-total').textContent = total.toLocaleString() + ' aUEC';
+        document.getElementById('split-org').textContent   = orgCut.toLocaleString() + ' aUEC';
+        document.getElementById('split-per').textContent   = perPilot.toLocaleString() + ' aUEC';
+        document.getElementById('split-per-label').textContent = `Per Pilot (70% ÷ ${crew} crew)`;
+        document.getElementById('split-result').style.display = 'grid';
+    }
+
+    // Initialise on load
+    buildReserveUI();
+    renderLedger();
+    renderSummary();
 </script>
 
 </body>
